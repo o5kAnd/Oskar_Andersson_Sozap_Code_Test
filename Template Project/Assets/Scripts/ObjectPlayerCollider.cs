@@ -8,7 +8,6 @@ public class ObjectPlayerCollider : MonoBehaviour
     public ObjectPlayerMain m_MainScript;
 
 
-
     void OnTriggerEnter2D(Collider2D collider)
     {
         if (collider != null)
@@ -16,19 +15,23 @@ public class ObjectPlayerCollider : MonoBehaviour
             GameObject obj = collider.gameObject;
             if (obj != null)
             {
-                Debug.Log("tag " + obj.tag);
+                //Debug.Log("tag " + obj.tag);
                 if (obj.tag == "Line")
-                    DestroyMainObjectAndCollider(obj);
-            }
-                
+                    LineColliding(obj);
+            }   
         }
+    }
 
+    void LineColliding(GameObject line)
+    {
+        if(m_MainScript.Invincibility_GetIfInvincible() == false)
+            DestroyMainObjectAndCollider(line);
     }
 
     void DestroyMainObjectAndCollider(GameObject colliderObject)
     {
         colliderObject.AddComponent<SelfDestructionScript>().InitSelfDestruction();
-        m_MainScript.gameObject.AddComponent<SelfDestructionScript>().InitSelfDestruction();
+        m_MainScript.Destroy();
     }
 
 

@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.UI;
 using UnityEngine;
 
 public class ObjectPlayerMain : MonoBehaviour
@@ -15,26 +16,48 @@ public class ObjectPlayerMain : MonoBehaviour
 
     public SpriteRenderer m_Renderer_InvincibilityIcon;
     public SpriteRenderer m_Renderer_ShotIcon;
-    public TextMesh m_Text_ScoreIcon;
+    public Text m_Text_ScoreIcon;
 
     public GameObject m_GameObj_RotateBody;
+    public GameObject m_LineHolderObject;
 
     Vector3 CurrentDir = new Vector3(1.0f, 0.0f, 0.0f);
 
+    const float SHIP_SPEED_PER_SEC_FARWARD = 5.05f;
 
-    public void Init(Color shipsColor, KeyCode upKey, KeyCode downKey, KeyCode leftKey, KeyCode rightKey)
+    GameMain.PlayerInfo m_PlayerInfo_ShipOwner;
+    public void Init(GameMain.PlayerInfo playerInfo, GameObject lineObjectHolder)
     {
-        Keys_SetRepresentation(upKey, downKey, leftKey, rightKey);
+        this.gameObject.name = playerInfo.name + "'s Ship";
+        m_LineHolderObject = lineObjectHolder;
+        m_PlayerInfo_ShipOwner = playerInfo;
+        Keys_SetRepresentation(m_PlayerInfo_ShipOwner.upKey, m_PlayerInfo_ShipOwner.downKey, m_PlayerInfo_ShipOwner.leftKey, m_PlayerInfo_ShipOwner.rightKey);
 
-        m_ShipsColor = shipsColor;
+        m_ShipsColor = m_PlayerInfo_ShipOwner.color;
         m_Renderer_ShipsColorPart.color = m_ShipsColor;
+        transform.position = m_PlayerInfo_ShipOwner.position;
         Lines_NewCreateLine();
+    }
+    
+    public void SetExtraIconsVisibility(bool isVisible)
+    {
+        m_Renderer_InvincibilityIcon.gameObject.SetActive(isVisible);
+        m_Renderer_ShotIcon.gameObject.SetActive(isVisible);
+        m_Text_ScoreIcon.transform.parent.gameObject.SetActive(isVisible);
+    }
+
+    public void Destroy(float timeUntilDestruction = 0.0f)
+    {
+        this.gameObject.AddComponent<SelfDestructionScript>().InitSelfDestruction(timeUntilDestruction);
     }
 
 
+    public void PreGame_Update(float deltaTime)
+    {
+        UpdateRotation(deltaTime);
+    }
 
-
-    public void IngameUpdate(float deltaTime)
+    public void InGame_Update(float deltaTime)
     {
         Lines_CheckLineTimers();
         Lines_UpdateTimers(deltaTime);
@@ -42,20 +65,41 @@ public class ObjectPlayerMain : MonoBehaviour
         transform.position += CurrentDir * deltaTime * SHIP_SPEED_PER_SEC_FARWARD;
         UpdateRotation(deltaTime);
 
+        Invincibility_Update(deltaTime);
+        Blinking_UpdateBlinking(deltaTime);
     }
 
+    const float ROTATION_MAX_SPEED_PER_SEC = 200.0f;
+    const float ROTATION_INCREASE_SPEED_PER_SEC = 200.0f;
+    const float ROTATION_DECREASE_SPEED_PER_SEC = -400.0f;
 
+    float Rotation_LeftRotationForce = 0.0f;
+    float Rotation_RightRotationForce = 0.0f;
 
-
-
+    float Rotation_UpdateRotationSpeedOnSpecific(float currentRotationForce, float increaseInRotationForce)
+    {
+        currentRotationForce += increaseInRotationForce;
+        if (currentRotationForce > ROTATION_MAX_SPEED_PER_SEC)
+            currentRotationForce = ROTATION_MAX_SPEED_PER_SEC;
+        else if (currentRotationForce < 0.0f)
+            currentRotationForce = 0.0f;
+        return currentRotationForce;
+    }
 
     void UpdateRotation(float deltaTime)
     {
         float rotation = 0.0f;
         if (Keys_GetKeyHeld(KEY_REPRESENTATION.RIGHT))
-            rotation = -deltaTime * SHIP_SPEED_PER_SEC_ROTATE;
-        else if (Keys_GetKeyHeld(KEY_REPRESENTATION.LEFT))
-            rotation = deltaTime * SHIP_SPEED_PER_SEC_ROTATE;
+            Rotation_RightRotationForce = Rotation_UpdateRotationSpeedOnSpecific(Rotation_RightRotationForce, ROTATION_INCREASE_SPEED_PER_SEC * deltaTime);
+        else
+            Rotation_RightRotationForce = Rotation_UpdateRotationSpeedOnSpecific(Rotation_RightRotationForce, ROTATION_DECREASE_SPEED_PER_SEC * deltaTime);
+
+        if (Keys_GetKeyHeld(KEY_REPRESENTATION.LEFT))
+            Rotation_LeftRotationForce = Rotation_UpdateRotationSpeedOnSpecific(Rotation_LeftRotationForce, ROTATION_INCREASE_SPEED_PER_SEC * deltaTime);
+        else
+            Rotation_LeftRotationForce = Rotation_UpdateRotationSpeedOnSpecific(Rotation_LeftRotationForce, ROTATION_DECREASE_SPEED_PER_SEC * deltaTime);
+
+        rotation = (Rotation_LeftRotationForce - Rotation_RightRotationForce) * deltaTime;
 
         if (rotation != 0.0f)
         {
@@ -84,7 +128,8 @@ public class ObjectPlayerMain : MonoBehaviour
 
 
 
-    // Key Part
+    //---------------------------------------------------------------
+    // ----------- KEY PART -----------
     enum KEY_REPRESENTATION { UP, DOWN, LEFT, RIGHT, MAX_NUM}
     KeyCode[] m_Arr_KeyCodes = new KeyCode[(int)KEY_REPRESENTATION.MAX_NUM];
     //int[] m_Arr_KeyStates = new int[(int)KEY_REPRESENTATION.MAX_NUM];
@@ -101,37 +146,122 @@ public class ObjectPlayerMain : MonoBehaviour
         m_Arr_KeyCodes[(int)KEY_REPRESENTATION.RIGHT] = rightKey;
     }
 
+    //---------------------------------------------------------------
 
 
 
-    //Invincibility
-    const float INVINVIBILITY_TIME = 2.0f;
-    const float INVINVIBILITY_COOLDOWN = INVINVIBILITY_TIME + 2.0f;
-    bool Invincibility_IsInvincible = false;
-    float Invincibility_Timer = 0.0f;
+
+
+
+
+    //---------------------------------------------------------------
+    // ----------- INVINVIBILITY SECTION -----------
+    const float INVINVIBILITY_TIME = 3.0f;
+    const float INVINVIBILITY_COOLDOWN = INVINVIBILITY_TIME + 1.0f;
+    bool m_Invincibility_IsInvincible = false;
+    float m_Invincibility_Timer = INVINVIBILITY_COOLDOWN;
     void Invincibility_Update(float deltaTime)
     {
-        if(Invincibility_Timer >= INVINVIBILITY_COOLDOWN)
+        if (m_Invincibility_Timer >= INVINVIBILITY_COOLDOWN)
         {
+            m_Renderer_InvincibilityIcon.gameObject.SetActive(true);
             if(Keys_GetKeyPressed(KEY_REPRESENTATION.DOWN) == true)
             {
-                Invincibility_Timer = 0.0f;
-                Invincibility_IsInvincible = true;
+                m_Invincibility_Timer = 0.0f;
+                m_Invincibility_IsInvincible = true;
+
+                Blinking_StartBlinking(INVINVIBILITY_TIME, 2, 0.4f);
             }
         }
         else
         {
-            Invincibility_Timer += deltaTime;
-            if(Invincibility_Timer >= INVINVIBILITY_TIME)
+            m_Renderer_InvincibilityIcon.gameObject.SetActive(false);
+            m_Invincibility_Timer += deltaTime;
+            if (m_Invincibility_Timer >= INVINVIBILITY_TIME)
             {
-                Invincibility_IsInvincible = false;
+                m_Invincibility_IsInvincible = false;
             }
         }
-
     }
 
-    public bool Invincibility_GetIfInvincible() { return Invincibility_IsInvincible; }
+    public bool Invincibility_GetIfInvincible() { return m_Invincibility_IsInvincible; }
 
+    //---------------------------------------------------------------
+
+
+
+
+
+
+    //---------------------------------------------------------------
+    // ----------- BLINKING SECTION -----------
+    bool m_Blinking_IsBlinking = false;
+    float m_Blinking_TotalTime = 0.0f;
+    float m_Blinking_Intensity = 0.0f;
+    float m_Blinking_Speed = 0.0f;
+    float m_Blinking_CurrentTime = 0.0f;
+
+    float m_Blinking_BlinkTime = 0.0f;
+    float m_Blinking_BlinkTimeFactor = 1.0f;
+    void Blinking_StartBlinking(float blinkingTotalTime, int numberOfBlinks, float blinkingIntensity)
+    {
+        Blinking_ResetValues();
+        m_Blinking_IsBlinking = true;
+        m_Blinking_TotalTime = blinkingTotalTime;
+        m_Blinking_Intensity = blinkingIntensity;
+
+        m_Blinking_Speed = (float)(numberOfBlinks * 2) / blinkingTotalTime;
+    }
+
+    void Blinking_ResetValues()
+    {
+        m_Blinking_IsBlinking = false;
+        m_Blinking_TotalTime = 0.0f;
+        m_Blinking_Intensity = 0.0f;
+        m_Blinking_Speed = 0.0f;
+        m_Blinking_CurrentTime = 0.0f;
+
+        m_Blinking_BlinkTime = 0.0f;
+        m_Blinking_BlinkTimeFactor = 1.0f;
+        Blinking_SetAlphaOnShipParts(1.0f);
+    }
+
+    void Blinking_UpdateBlinking(float deltaTime)
+    {
+        if(m_Blinking_IsBlinking == true)
+        {
+            if (m_Blinking_CurrentTime >= m_Blinking_TotalTime)
+                Blinking_ResetValues();
+            else
+            {
+                m_Blinking_CurrentTime += deltaTime;
+                Blinking_SetAlphaOnShipParts(1.0f - (m_Blinking_BlinkTime * m_Blinking_Intensity));
+
+                m_Blinking_BlinkTime += deltaTime * m_Blinking_Speed * m_Blinking_BlinkTimeFactor;
+                if (m_Blinking_BlinkTime <= 0.0f)
+                {
+                    m_Blinking_BlinkTime = 0.0f;
+                    m_Blinking_BlinkTimeFactor = 1.0f;
+                }
+                else if (m_Blinking_BlinkTime >= 1.0f)
+                {
+                    m_Blinking_BlinkTime = 1.0f;
+                    m_Blinking_BlinkTimeFactor = -1.0f;
+                }
+            }
+        }
+    }
+
+    void Blinking_SetAlphaOnShipParts(float alphaVal)
+    {
+        m_Renderer_ShipsColorPart.color = GetColorWithNewAlpha(m_Renderer_ShipsColorPart.color, alphaVal);
+        m_Renderer_ShipsMainPart.color = GetColorWithNewAlpha(m_Renderer_ShipsMainPart.color, alphaVal);
+    }
+
+    //---------------------------------------------------------------
+
+
+    Color GetColorWithNewAlpha(Color color, float alphaVal) {   return new Color(color.r, color.g, color.b, alphaVal); }
 
 
 
@@ -139,6 +269,8 @@ public class ObjectPlayerMain : MonoBehaviour
 
     void Lines_CheckLineTimers()
     {
+        if (lineRenderer == null)
+            Lines_NewCreateLine();
         
         if (m_LineTimer_Current_UpdateLine <= 0.0f)
         {
@@ -155,8 +287,8 @@ public class ObjectPlayerMain : MonoBehaviour
 
     }
 
-    const float SHIP_SPEED_PER_SEC_FARWARD = 2.0f;
-    const float SHIP_SPEED_PER_SEC_ROTATE = 300.0f;
+    
+
     const float LINE_TIMER_MAX = 1.0f;
     const float LINE_UPDATE_INTERVAL = 0.25f;
     float m_LineTimer_Current_NewLine = 0.0f;
@@ -199,6 +331,7 @@ public class ObjectPlayerMain : MonoBehaviour
         lineRenderer.endColor = m_ShipsColor;
         lineRenderer.material.color = m_ShipsColor;
 
+        currentLine.gameObject.transform.SetParent(m_LineHolderObject.transform);
     }
 
     void Lines_UpdateLine_AddNewPoint()
@@ -218,15 +351,6 @@ public class ObjectPlayerMain : MonoBehaviour
     }
 
 
-    void Start()
-    {
-        Init(Color.red, KeyCode.W, KeyCode.S, KeyCode.A, KeyCode.D);
-    }
-
-    void Update()
-    {
-        IngameUpdate(Time.deltaTime);
-    }
 
 
 

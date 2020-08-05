@@ -55,6 +55,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\Scripts\GameMain.StateHandler.cs" />
      <Compile Include="Assets\Scripts\GameMain.cs" />
      <Compile Include="Assets\Scripts\LineDraw.cs" />
      <Compile Include="Assets\Scripts\ObjectBulletMain.cs" />
@@ -62,6 +63,8 @@
      <Compile Include="Assets\Scripts\ObjectPlayerCollider.cs" />
      <Compile Include="Assets\Scripts\ObjectPlayerMain.cs" />
      <Compile Include="Assets\Scripts\SelfDestructionScript.cs" />
+     <Compile Include="Assets\Scripts\UI_Main.cs" />
+     <Compile Include="Assets\Scripts\UI_Player.cs" />
      <None Include="Assets\TextMesh Pro\Resources\Shaders\TMPro.cginc" />
      <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_SDF-Mobile Overlay.shader" />
      <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_Bitmap.shader" />

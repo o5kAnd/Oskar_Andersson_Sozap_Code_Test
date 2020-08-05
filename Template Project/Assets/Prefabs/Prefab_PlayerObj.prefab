@@ -131,12 +131,13 @@ MonoBehaviour:
   Prefab_Line: {fileID: 786581342580358344, guid: 66d677283346dd241a11e7c02717b1c1,
     type: 3}
   m_Renderer_ShipsColorPart: {fileID: 3976321615884328712}
-  m_Renderer_ShipsMainPart: {fileID: 0}
+  m_Renderer_ShipsMainPart: {fileID: 1358316572893804534}
   m_ColliderScript: {fileID: 1519034980457001866}
   m_Renderer_InvincibilityIcon: {fileID: 8142888922753483054}
   m_Renderer_ShotIcon: {fileID: 6445792462661875935}
-  m_Text_ScoreIcon: {fileID: 6574677505570614499}
+  m_Text_ScoreIcon: {fileID: 4434079060030799034}
   m_GameObj_RotateBody: {fileID: 2823190339425467680}
+  m_LineHolderObject: {fileID: 0}
   currentLine: {fileID: 0}
   lineRenderer: {fileID: 0}
   edgeCollider: {fileID: 0}
@@ -891,3 +892,15 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 2470553577938709791}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &4434079060030799034 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2287872635003556261, guid: d3f80c5da6def214d85e6c16778e03c5,
+    type: 3}
+  m_PrefabInstance: {fileID: 2470553577938709791}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
