@@ -126,8 +126,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 22af6cfea89f8d640b18a650314948ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Prefab_ObjectBullet: {fileID: 1792465683992669664, guid: 3919c808e25b5c948b4fa2d82fcbc7e3,
-    type: 3}
   Prefab_Line: {fileID: 786581342580358344, guid: 66d677283346dd241a11e7c02717b1c1,
     type: 3}
   m_Renderer_ShipsColorPart: {fileID: 3976321615884328712}
@@ -637,7 +635,7 @@ GameObject:
   - component: {fileID: 1519034980457001866}
   m_Layer: 0
   m_Name: ColliderObj
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

@@ -39,7 +39,7 @@ public partial class GameMain : MonoBehaviour
         }
         public override void ExitState()
         {
-
+            m_MainRef.State_PlayerPickMenu_ExitState();
         }
     }
 
@@ -55,7 +55,7 @@ public partial class GameMain : MonoBehaviour
         }
         public override void ExitState()
         {
-
+            m_MainRef.State_PreGame_ExitState();
         }
     }
 
@@ -67,11 +67,11 @@ public partial class GameMain : MonoBehaviour
         }
         public override void EnterState()
         {
-            m_MainRef.State_InGamee_EnterState();
+            m_MainRef.State_InGame_EnterState();
         }
         public override void ExitState()
         {
-
+            m_MainRef.State_InGame_ExitState();
         }
     }
 
@@ -79,15 +79,15 @@ public partial class GameMain : MonoBehaviour
     {
         public override void UpdateState(float deltaTime)
         {
-
+            m_MainRef.State_ShowScore_Update(deltaTime);
         }
         public override void EnterState()
         {
-
+            m_MainRef.State_ShowScore_EnterState();
         }
         public override void ExitState()
         {
-
+            m_MainRef.State_ShowScore_ExitState();
         }
     }
 
