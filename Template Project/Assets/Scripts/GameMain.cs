@@ -173,14 +173,14 @@ public partial class GameMain : MonoBehaviour
             {
                 CountDown_FirstMessageShowed = true;
                 if (CountDown_Round <= 1)
-                    SpawnCountDownUI("First to " + SCORE_AMOUNT_FOR_END +" points");
+                    SpawnCountDownUI("First to " + SCORE_AMOUNT_FOR_END +" points", 1.1f);
                 else
-                    SpawnCountDownUI("Round: " + CountDown_Round);
+                    SpawnCountDownUI("Round: " + CountDown_Round, 1.1f);
             }
             else if (CountDown_CurrentCount > 0)
-                SpawnCountDownUI("" + CountDown_CurrentCount);
+                SpawnCountDownUI("" + CountDown_CurrentCount, 1.1f);
             else if(CountDown_CurrentCount == 0)
-                SpawnCountDownUI("Start");
+                SpawnCountDownUI("Start", 1.0f);
 
 
         }
@@ -200,7 +200,7 @@ public partial class GameMain : MonoBehaviour
 
 
     const int SCORE_AMOUNT_PER_WIN = 30;
-    const int SCORE_AMOUNT_FOR_END = 60;
+    const int SCORE_AMOUNT_FOR_END = 150;
     public void CheckWinner()
     {
         ObjectManager o = ObjectManager.GetObjectManager();
@@ -221,12 +221,14 @@ public partial class GameMain : MonoBehaviour
 
 
 
-    public void SpawnCountDownUI(string countDownText)
+    public void SpawnCountDownUI(string countDownText, float displayTime)
     {
         GameObject obj = Instantiate(Prefab_UI_CountDownText, Vector2.zero, Quaternion.identity);
         UI_CountDownText m_UI_Score = obj.GetComponent<UI_CountDownText>();
 
-        m_UI_Score.Init(countDownText, 0.75f);
+        m_UI_Score.Init(countDownText, displayTime);
+        m_UI_Score.SetIntroductionSettings(0.0f, 0.5f, displayTime * 0.6f, 0.3f);
+        m_UI_Score.SetEndSettings(0.0f, 0.5f, displayTime * 0.4f, 0.3f);
     }
 
 

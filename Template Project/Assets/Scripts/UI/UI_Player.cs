@@ -38,7 +38,13 @@ public class UI_Player : MonoBehaviour
         AssignKeys(playerInfo.upKey, playerInfo.downKey, playerInfo.leftKey, playerInfo.rightKey);
     }
 
-
+    string GetLastCharFromString(string text)
+    {
+        char[] arr = text.ToCharArray();
+        if (arr.Length > 0)
+            return "" + arr[arr.Length - 1];
+        return "";
+    }
     public void AssignKeys(KeyCode upKey, KeyCode downKey, KeyCode leftKey, KeyCode rightKey)
     {
         if(upKey == KeyCode.UpArrow)
@@ -49,7 +55,7 @@ public class UI_Player : MonoBehaviour
         else
         {
             m_ButtonText_Up.gameObject.SetActive(true);
-            m_ButtonText_Up.text = upKey.ToString();
+            m_ButtonText_Up.text = GetLastCharFromString(upKey.ToString());
             m_ButtonIcon_Up.gameObject.SetActive(false);
         }
 
@@ -62,7 +68,7 @@ public class UI_Player : MonoBehaviour
         else
         {
             m_ButtonText_Down.gameObject.SetActive(true);
-            m_ButtonText_Down.text = downKey.ToString();
+            m_ButtonText_Down.text = GetLastCharFromString(downKey.ToString());
             m_ButtonIcon_Down.gameObject.SetActive(false);
         }
 
@@ -74,7 +80,7 @@ public class UI_Player : MonoBehaviour
         else
         {
             m_ButtonText_Left.gameObject.SetActive(true);
-            m_ButtonText_Left.text = leftKey.ToString();
+            m_ButtonText_Left.text = GetLastCharFromString(leftKey.ToString());
             m_ButtonIcon_Left.gameObject.SetActive(false);
         }
 
@@ -86,7 +92,7 @@ public class UI_Player : MonoBehaviour
         else
         {
             m_ButtonText_Right.gameObject.SetActive(true);
-            m_ButtonText_Right.text = rightKey.ToString();
+            m_ButtonText_Right.text = GetLastCharFromString(rightKey.ToString());
             m_ButtonIcon_Right.gameObject.SetActive(false);
         }
         

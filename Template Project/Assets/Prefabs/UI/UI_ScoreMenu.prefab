@@ -194,7 +194,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: -2083}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1598532541942344946
@@ -450,6 +450,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1699c8f8a5e753d4cb1c1bd58df5be09, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_Transform_MainContentHolder: {fileID: 1598532541942344944}
   m_Text_NextStateButtonText: {fileID: 1598532543431585794}
   m_List_PlayerScores:
   - {fileID: 1598532542979521679}
@@ -976,6 +977,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1427610434964139623}
     m_Modifications:
+    - target: {fileID: 6498787390691657951, guid: c455beb32a5c4e94eaee0029c1f35aff,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 1.5656738
+      objectReference: {fileID: 0}
     - target: {fileID: 6498787391666135354, guid: c455beb32a5c4e94eaee0029c1f35aff,
         type: 3}
       propertyPath: m_Name
@@ -1113,6 +1119,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 5373060145150447095}
     m_Modifications:
+    - target: {fileID: 6498787390691657951, guid: c455beb32a5c4e94eaee0029c1f35aff,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 1.5656738
+      objectReference: {fileID: 0}
     - target: {fileID: 6498787391666135354, guid: c455beb32a5c4e94eaee0029c1f35aff,
         type: 3}
       propertyPath: m_Name
@@ -1285,6 +1296,11 @@ PrefabInstance:
       propertyPath: m_AnchorMin.y
       value: 0.075890146
       objectReference: {fileID: 0}
+    - target: {fileID: 6498787390691657951, guid: c455beb32a5c4e94eaee0029c1f35aff,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 1.5656738
+      objectReference: {fileID: 0}
     - target: {fileID: 6498787391666135354, guid: c455beb32a5c4e94eaee0029c1f35aff,
         type: 3}
       propertyPath: m_Name
@@ -1422,6 +1438,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 7256359268977009292}
     m_Modifications:
+    - target: {fileID: 6498787390691657951, guid: c455beb32a5c4e94eaee0029c1f35aff,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 1.5656738
+      objectReference: {fileID: 0}
     - target: {fileID: 6498787391666135354, guid: c455beb32a5c4e94eaee0029c1f35aff,
         type: 3}
       propertyPath: m_Name

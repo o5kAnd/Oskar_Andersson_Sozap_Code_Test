@@ -64,6 +64,7 @@
      <Compile Include="Assets\Scripts\ObjectManager.cs" />
      <Compile Include="Assets\Scripts\SelfDestructionScript.cs" />
      <Compile Include="Assets\Scripts\UI\UI_CountDownText.cs" />
+     <Compile Include="Assets\Scripts\UI\UI_FadeUI.cs" />
      <Compile Include="Assets\Scripts\UI\UI_Main.cs" />
      <Compile Include="Assets\Scripts\UI\UI_Player.cs" />
      <Compile Include="Assets\Scripts\UI\UI_ScoreMain.cs" />

@@ -208,8 +208,8 @@ public class ObjectPlayerMain : MonoBehaviour
 
     //---------------------------------------------------------------
     // ----------- INVINVIBILITY SECTION -----------
-    const float INVINVIBILITY_TIME = 3.0f;
-    const float INVINVIBILITY_COOLDOWN = INVINVIBILITY_TIME + 1.0f;
+    const float INVINVIBILITY_TIME = 1.5f;
+    const float INVINVIBILITY_COOLDOWN = INVINVIBILITY_TIME + 4.0f;
     bool m_Invincibility_IsInvincible = false;
     float m_Invincibility_Timer = INVINVIBILITY_COOLDOWN;
     void Invincibility_Update(float deltaTime)
@@ -342,7 +342,7 @@ public class ObjectPlayerMain : MonoBehaviour
 
     
 
-    const float LINE_TIMER_MAX = 1.0f;
+    const float LINE_TIMER_MAX = 0.6f;
     const float LINE_UPDATE_INTERVAL = 1.0f/30.0f;
     float m_LineTimer_Current_NewLine = 0.0f;
     float m_LineTimer_Current_UpdateLine = 0.0f;

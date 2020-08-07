@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class UI_ScoreMain : MonoBehaviour
 {
+    public RectTransform m_Transform_MainContentHolder;
     public Text m_Text_NextStateButtonText;
     public List<UI_ScorePlayer> m_List_PlayerScores = new List<UI_ScorePlayer>();
     public List<GameObject> m_List_RankingObjects = new List<GameObject>();
@@ -33,6 +34,14 @@ public class UI_ScoreMain : MonoBehaviour
 
         UpdateActivePlayerScoreBoxes(playerAmount);
 
+
+    }
+
+    void Update()
+    {
+        // it seems that alpha does not apply at once which result in a flash, so a temporary fix is to spawn it off screen and moves it to av visible space at the first frame
+        m_Transform_MainContentHolder.offsetMax = Vector2.zero;
+        m_Transform_MainContentHolder.offsetMin = Vector2.zero;
     }
 
 
@@ -75,7 +84,11 @@ public class UI_ScoreMain : MonoBehaviour
 
         // set correct parent
         for (int i = 0; i < m_List_RankingObjects.Count; ++i)
+        {
             m_List_PlayerScores[idRankList[i]].transform.SetParent((m_List_RankingObjects[i].transform));
+            m_List_PlayerScores[idRankList[i]].SetRankNumber(i + 1);
+        }
+            
 
     }
 
@@ -92,8 +105,17 @@ public class UI_ScoreMain : MonoBehaviour
 
     public void Button_NextState()
     {
-        GameMain.GetGameMain().GameStates_ChangeState(m_GameStat_NextState);
-        this.gameObject.AddComponent<SelfDestructionScript>().InitSelfDestruction();
+        GameMain.GetGameMain().GameStates_ChangeState(m_GameStat_NextState, 1.0f);
+        m_FadeScript.ActivateFadeOut();
+        this.gameObject.AddComponent<SelfDestructionScript>().InitSelfDestruction(1.1f);
+    }
+
+    UI_FadeUI m_FadeScript;
+    void Awake()
+    {
+        m_FadeScript = this.gameObject.AddComponent<UI_FadeUI>();
+        m_FadeScript.Init(1.0f, 1.0f);
+        m_FadeScript.ActivateFadeIn();
     }
 
 }

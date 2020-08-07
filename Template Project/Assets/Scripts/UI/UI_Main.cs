@@ -47,8 +47,9 @@ public class UI_Main : MonoBehaviour
 
     public void ButtonPressed_StartGame()
     {
-        GameMain.GetGameMain().GameStates_ChangeState(GAME_STATE.PRE_GAME);
-        this.gameObject.AddComponent<SelfDestructionScript>().InitSelfDestruction();
+        GameMain.GetGameMain().GameStates_ChangeState(GAME_STATE.PRE_GAME, 0.5f);
+        m_FadeScript.ActivateFadeOut();
+        this.gameObject.AddComponent<SelfDestructionScript>().InitSelfDestruction(0.6f);
     }
 
     public void ButtonPressed_IncreaseNumPlayers()
@@ -67,10 +68,12 @@ public class UI_Main : MonoBehaviour
         UpdateActiveGameBoxes(numPlayers);
     }
 
-    // Start is called before the first frame update
-    void Start()
+    UI_FadeUI m_FadeScript;
+    void Awake()
     {
-
+        m_FadeScript = this.gameObject.AddComponent<UI_FadeUI>();
+        m_FadeScript.Init(0.5f, 0.5f);
+        m_FadeScript.ActivateFadeIn();
     }
 
     // Update is called once per frame

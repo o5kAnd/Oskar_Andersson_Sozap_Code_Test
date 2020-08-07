@@ -105,11 +105,32 @@ public partial class GameMain : MonoBehaviour
             m_Array_GameStates[i].Init(this);
     }
 
-    public void GameStates_ChangeState(GAME_STATE newState)
+    bool m_GameStateChangeInvoked = false;
+    GAME_STATE m_NewGameStateRequested;
+    public void GameStates_ChangeState(GAME_STATE newState, float timeUntilStateChange = 0.0f)
     {
-        m_Array_GameStates[m_CurrentGameState].ExitState();
-        m_CurrentGameState = (int)newState;
-        m_Array_GameStates[m_CurrentGameState].EnterState();
+        if(m_GameStateChangeInvoked == false)
+        {
+            m_GameStateChangeInvoked = true;
+            m_NewGameStateRequested = newState;
+            if (timeUntilStateChange > 0.0f)
+                Invoke("Invoked_GameStates_ChangeState", timeUntilStateChange);
+            else
+                Invoked_GameStates_ChangeState();
+        }
     }
+
+    void Invoked_GameStates_ChangeState()
+    {
+        if(m_GameStateChangeInvoked == true)
+        {
+            m_GameStateChangeInvoked = false;
+            m_Array_GameStates[m_CurrentGameState].ExitState();
+            m_CurrentGameState = (int)m_NewGameStateRequested;
+            m_Array_GameStates[m_CurrentGameState].EnterState();
+        }
+    }
+
+
     int m_CurrentGameState = (int)GAME_STATE.STARTING;
 }
