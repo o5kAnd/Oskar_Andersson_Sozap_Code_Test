@@ -41,7 +41,6 @@ public partial class GameMain : MonoBehaviour
         public int GetScore_PreviousRound() { return score_PrevRound; }
         public void AddScore(int scoreNum)
         {
-            UpdatePreviousMatchScore();
             score += scoreNum;
         }
 
@@ -207,9 +206,6 @@ public partial class GameMain : MonoBehaviour
         int numShipsLeft = o.CheckWinner_GetNumbersOfShipsLeft();
         if(numShipsLeft <= 1)
         {
-            for (int i = 0; i < m_List_Players.Count; ++i)
-                m_List_Players[i].UpdatePreviousMatchScore();
-
             if (numShipsLeft == 1)
             {
                 int winnerId = o.CheckWinner_GetPlayerIdFromShip(0);
@@ -283,6 +279,8 @@ public partial class GameMain : MonoBehaviour
     public void State_InGame_EnterState()
     {
         ObjectManager.GetObjectManager().SetShipsIconVisibility(true);
+        for (int i = 0; i < m_List_Players.Count; ++i)
+            m_List_Players[i].UpdatePreviousMatchScore();
     }
     public void State_InGame_ExitState()
     {

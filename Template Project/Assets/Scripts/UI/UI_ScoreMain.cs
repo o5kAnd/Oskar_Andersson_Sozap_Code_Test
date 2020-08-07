@@ -94,12 +94,13 @@ public class UI_ScoreMain : MonoBehaviour
 
     bool CheckIfPlayerReachedMaxPoints()
     {
+        bool winnerFound = false;
         for(int i = 0; i < m_List_PlayerScores.Count; ++i)
         {
             if (m_List_PlayerScores[i].GetIfMaxScore() == true)
-                return true;
+                winnerFound = true;
         }
-        return false;
+        return winnerFound;
     }
 
 

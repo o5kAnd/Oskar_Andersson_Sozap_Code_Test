@@ -15,6 +15,7 @@ public class ObjectBulletMain : MonoBehaviour
 
     // match if list ID is equal to that of bullets playerInfo
     public int PlayerInfo_GetId() { return m_PlayerInfo_BulletOwner.listId; }
+    public void PlayerInfo_AddScore(int scoreAmount) { m_PlayerInfo_BulletOwner.AddScore(scoreAmount); }
     public bool PlayerInfo_MatchIds(int listId) { return m_PlayerInfo_BulletOwner.listId == listId ? true : false; }
 
     public void SetBulletId(int id) { m_BulletsListId = id; }

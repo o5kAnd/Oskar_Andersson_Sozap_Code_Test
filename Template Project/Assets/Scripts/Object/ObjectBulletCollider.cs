@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class ObjectBulletCollider : MonoBehaviour
 {
+    int BULLET_SCORE_PER_SHIP_HIT = 10;
+
 
     public ObjectBulletMain m_MainScript;
 
@@ -42,7 +44,7 @@ public class ObjectBulletCollider : MonoBehaviour
                 BulletColliding(obj);
         }
     }
-
+    
     void PlayerColliding(GameObject player)
     {
         //Debug.Log(player.tag);
@@ -50,7 +52,10 @@ public class ObjectBulletCollider : MonoBehaviour
         if (playerScript != null)
         {
             if (playerScript.BulletColliding(m_MainScript.PlayerInfo_GetId()) == true)
+            {
+                m_MainScript.PlayerInfo_AddScore(BULLET_SCORE_PER_SHIP_HIT);
                 m_MainScript.Destroy();
+            }  
         } 
     }
     void LineColliding(GameObject line)
@@ -68,8 +73,8 @@ public class ObjectBulletCollider : MonoBehaviour
             //Debug.Log("bullet " + bulletScript.m_MainScript.PlayerInfo_GetId());
             if (bulletScript.m_MainScript.PlayerInfo_GetId() != m_MainScript.PlayerInfo_GetId())
             {
-                bulletScript.m_MainScript.Destroy();
                 m_MainScript.Destroy();
+                bulletScript.m_MainScript.Destroy();
             }
         }
     }

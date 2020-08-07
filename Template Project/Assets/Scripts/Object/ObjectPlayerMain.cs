@@ -65,6 +65,8 @@ public class ObjectPlayerMain : MonoBehaviour
         Lines_CheckLineTimers();
         Lines_UpdateTimers(deltaTime);
 
+        m_Text_ScoreIcon.text = "" + (m_PlayerInfo_ShipOwner.GetScore() - m_PlayerInfo_ShipOwner.GetScore_PreviousRound());
+
         Vector3 deltaMove = m_CurrentDir * deltaTime * SHIP_SPEED_PER_SEC_FARWARD;
         m_ColliderScript.LinecastCheck(m_CurrentDir, deltaMove);
         transform.position += deltaMove;
