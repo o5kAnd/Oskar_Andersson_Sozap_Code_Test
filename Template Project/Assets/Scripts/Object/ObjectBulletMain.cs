@@ -11,7 +11,6 @@ public class ObjectBulletMain : MonoBehaviour
     Vector3 m_MoveDirection;
     Vector3 m_PrevPosition;
     int m_BulletsListId;
-    float m_BulletSize;
 
     // match if list ID is equal to that of bullets playerInfo
     public int PlayerInfo_GetId() { return m_PlayerInfo_BulletOwner.listId; }
@@ -25,10 +24,9 @@ public class ObjectBulletMain : MonoBehaviour
         transform.position = spawnPos;
         m_MoveDirection = moveDirection;
         m_PlayerInfo_BulletOwner = owner;
-        //m_BulletSize = GetComponentInChildren<CircleCollider2D>().radius;
     }
 
-    // Update is called once per frame
+    // Runs from ObjectManager
     public void InGame_Update(float deltaTime)
     {
         Vector3 deltaMove = m_MoveDirection * deltaTime * BULLET_SPEED_PER_SEC;
@@ -37,7 +35,7 @@ public class ObjectBulletMain : MonoBehaviour
         transform.position += deltaMove;
     }
 
-    // removal of gameobject should go through this function
+    // removal of game object should go through this function
     // "removeBulletFromBulletList" should be true except then you manually is handling the Bullet list in ObjectManager
     public void Destroy(bool removeBulletFromBulletList = true)
     {
