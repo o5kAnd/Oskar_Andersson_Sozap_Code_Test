@@ -137,6 +137,7 @@ MonoBehaviour:
   m_GameObj_RotateBody: {fileID: 2823190339425467680}
   m_LineHolderObject: {fileID: 0}
   currentLine: {fileID: 0}
+  currentLineScript: {fileID: 0}
   lineRenderer: {fileID: 0}
   edgeCollider: {fileID: 0}
   m_List_objectPositions: []
@@ -648,7 +649,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7677590217114140630}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.3, y: 0, z: 0}
+  m_LocalPosition: {x: 0.204, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4316982774109517349}

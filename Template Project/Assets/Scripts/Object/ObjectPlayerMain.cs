@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine;
 
+//--- This main clas of players ship contains many sections of related functions
 public class ObjectPlayerMain : MonoBehaviour
 {
     public GameObject Prefab_Line;
-
 
     Color m_ShipsColor;
     public SpriteRenderer m_Renderer_ShipsColorPart;
@@ -21,8 +21,6 @@ public class ObjectPlayerMain : MonoBehaviour
     public GameObject m_LineHolderObject;
 
     Vector3 m_CurrentDir = new Vector3(1.0f, 0.0f, 0.0f);
-
-    const float SHIP_SPEED_PER_SEC_FARWARD = 10.05f;
 
     GameMain.PlayerInfo m_PlayerInfo_ShipOwner;
     public int PlayerInfo_GetId() { return m_PlayerInfo_ShipOwner.listId; }
@@ -48,12 +46,15 @@ public class ObjectPlayerMain : MonoBehaviour
         m_Text_ScoreIcon.transform.parent.gameObject.SetActive(isVisible);
     }
 
-    // removal of gameobject should go through this function
+    // removal of ships should go through this function
     public void Destroy(float timeUntilDestruction = 0.0f)
     {
         this.gameObject.AddComponent<SelfDestructionScript>().InitSelfDestruction(timeUntilDestruction);
     }
 
+
+    //---- UDATES ----------------
+    //--- all updates should run from ObjectManager
 
     public void PreGame_Update(float deltaTime)
     {
@@ -62,14 +63,15 @@ public class ObjectPlayerMain : MonoBehaviour
 
     public void InGame_Update(float deltaTime)
     {
-        Lines_CheckLineTimers();
-        Lines_UpdateTimers(deltaTime);
+        if (m_Lines_DrawLinesIsActive == true)
+        {
+            Lines_CheckLineTimers();
+            Lines_UpdateTimers(deltaTime);
+        }
 
         m_Text_ScoreIcon.text = "" + (m_PlayerInfo_ShipOwner.GetScore() - m_PlayerInfo_ShipOwner.GetScore_PreviousRound());
 
-        Vector3 deltaMove = m_CurrentDir * deltaTime * SHIP_SPEED_PER_SEC_FARWARD;
-        m_ColliderScript.LinecastCheck(m_CurrentDir, deltaMove);
-        transform.position += deltaMove;
+        UpdateMovementAndPerformCollisionCheck(deltaTime);
         Rotation_Update(deltaTime);
 
         Invincibility_Update(deltaTime);
@@ -80,8 +82,17 @@ public class ObjectPlayerMain : MonoBehaviour
 
 
 
+    //---------------------------------------------------------------
+    // ----------- MOVEMENT PART -----------
+    const float SHIP_SPEED_PER_SEC_FARWARD = 12.5f;
+    void UpdateMovementAndPerformCollisionCheck(float deltaTime)
+    {
+        Vector3 deltaMove = m_CurrentDir * deltaTime * SHIP_SPEED_PER_SEC_FARWARD;
+        m_ColliderScript.LinecastCheck(m_CurrentDir, deltaMove);
+        transform.position += deltaMove;
+    }
 
-
+    //---------------------------------------------------------------
 
     //---------------------------------------------------------------
     // ----------- ROTATION PART -----------
@@ -90,11 +101,11 @@ public class ObjectPlayerMain : MonoBehaviour
     const float ROTATION_INCREASE_SPEED_PER_SEC = 300.0f;
     const float ROTATION_DECREASE_SPEED_PER_SEC = -400.0f;
 
-    float Rotation_LeftRotationForce = 0.0f;
-    float Rotation_RightRotationForce = 0.0f;
+    float m_Rotation_LeftRotationForce = 0.0f;
+    float m_Rotation_RightRotationForce = 0.0f;
 
     float Rotation_PreviousValue = 0;
-    float Rotation_UpdateRotationSpeedOnSpecific(float currentRotationForce, float increaseInRotationForce)
+    float Rotation_UpdateRotationSpeedOnSpecificDirection(float currentRotationForce, float increaseInRotationForce)
     {
         currentRotationForce += increaseInRotationForce;
         if (currentRotationForce > ROTATION_MAX_SPEED_PER_SEC)
@@ -108,16 +119,16 @@ public class ObjectPlayerMain : MonoBehaviour
     {
         float rotation = 0.0f;
         if (Keys_GetKeyHeld(KEY_REPRESENTATION.RIGHT))
-            Rotation_RightRotationForce = Rotation_UpdateRotationSpeedOnSpecific(Rotation_RightRotationForce, ROTATION_INCREASE_SPEED_PER_SEC * deltaTime);
+            m_Rotation_RightRotationForce = Rotation_UpdateRotationSpeedOnSpecificDirection(m_Rotation_RightRotationForce, ROTATION_INCREASE_SPEED_PER_SEC * deltaTime);
         else
-            Rotation_RightRotationForce = Rotation_UpdateRotationSpeedOnSpecific(Rotation_RightRotationForce, ROTATION_DECREASE_SPEED_PER_SEC * deltaTime);
+            m_Rotation_RightRotationForce = Rotation_UpdateRotationSpeedOnSpecificDirection(m_Rotation_RightRotationForce, ROTATION_DECREASE_SPEED_PER_SEC * deltaTime);
 
         if (Keys_GetKeyHeld(KEY_REPRESENTATION.LEFT))
-            Rotation_LeftRotationForce = Rotation_UpdateRotationSpeedOnSpecific(Rotation_LeftRotationForce, ROTATION_INCREASE_SPEED_PER_SEC * deltaTime);
+            m_Rotation_LeftRotationForce = Rotation_UpdateRotationSpeedOnSpecificDirection(m_Rotation_LeftRotationForce, ROTATION_INCREASE_SPEED_PER_SEC * deltaTime);
         else
-            Rotation_LeftRotationForce = Rotation_UpdateRotationSpeedOnSpecific(Rotation_LeftRotationForce, ROTATION_DECREASE_SPEED_PER_SEC * deltaTime);
+            m_Rotation_LeftRotationForce = Rotation_UpdateRotationSpeedOnSpecificDirection(m_Rotation_LeftRotationForce, ROTATION_DECREASE_SPEED_PER_SEC * deltaTime);
 
-        rotation = (Rotation_LeftRotationForce - Rotation_RightRotationForce) * deltaTime;
+        rotation = (m_Rotation_LeftRotationForce - m_Rotation_RightRotationForce) * deltaTime;
 
         Rotation_PreviousValue = m_GameObj_RotateBody.transform.rotation.z;
         if (rotation != 0.0f)
@@ -153,10 +164,9 @@ public class ObjectPlayerMain : MonoBehaviour
 
     //---------------------------------------------------------------
     // ----------- KEY PART -----------
+    // --- used for all key related inputs
     enum KEY_REPRESENTATION { UP, DOWN, LEFT, RIGHT, MAX_NUM}
     KeyCode[] m_Arr_KeyCodes = new KeyCode[(int)KEY_REPRESENTATION.MAX_NUM];
-    //int[] m_Arr_KeyStates = new int[(int)KEY_REPRESENTATION.MAX_NUM];
-    //int[] m_Arr_KeyStates_Prev = new int[(int)KEY_REPRESENTATION.MAX_NUM];
 
     bool Keys_GetKeyHeld(KEY_REPRESENTATION key)    {   return Input.GetKey(m_Arr_KeyCodes[(int)key]);   }
     bool Keys_GetKeyPressed(KEY_REPRESENTATION key) { return Input.GetKeyDown(m_Arr_KeyCodes[(int)key]); }
@@ -249,6 +259,7 @@ public class ObjectPlayerMain : MonoBehaviour
 
     //---------------------------------------------------------------
     // ----------- BLINKING SECTION -----------
+    // Blinking is currently defined as alpha transition
     bool m_Blinking_IsBlinking = false;
     float m_Blinking_TotalTime = 0.0f;
     float m_Blinking_Intensity = 0.0f;
@@ -263,7 +274,7 @@ public class ObjectPlayerMain : MonoBehaviour
         m_Blinking_IsBlinking = true;
         m_Blinking_TotalTime = blinkingTotalTime;
         m_Blinking_Intensity = blinkingIntensity;
-
+        // the "2" is because each blink consist of transition to and from blink
         m_Blinking_Speed = (float)(numberOfBlinks * 2) / blinkingTotalTime;
     }
 
@@ -314,112 +325,117 @@ public class ObjectPlayerMain : MonoBehaviour
 
     //---------------------------------------------------------------
 
-
     Color GetColorWithNewAlpha(Color color, float alphaVal) {   return new Color(color.r, color.g, color.b, alphaVal); }
 
 
 
 
 
-    void Lines_CheckLineTimers()
-    {
-        if (lineRenderer == null)
-            Lines_NewCreateLine();
-        
-        // add points if timer <= 0, but only if the ship is rotating
-        if (m_LineTimer_Current_UpdateLine <= 0.0f && Rotation_CheckIfSameAngleSinceLastUpdate() == false)
-        {
-            Lines_UpdateLine_AddNewPoint();
-        }
-        
-        Lines_UpdateLine_UpdateLatestPoint();
 
-        if (m_LineTimer_Current_NewLine <= 0.0f)
-        {
-            //Lines_UpdateLine_AddNewPoint();
-            Lines_NewCreateLine();
-        }
+    //---------------------------------------------------------------
+    // ----------- LINE SECTION -----------
+    // This last part handles all line associative functions, lines are made from many separate segments
 
-    }
-
-    
-
-    const float LINE_TIMER_MAX = 0.6f;
-    const float LINE_UPDATE_INTERVAL = 1.0f/30.0f;
+    const float LINE_TIMER_MAX = 0.25f;// Max time until a new line segment is created
+    const float LINE_UPDATE_INTERVAL = 1.0f/30.0f; // the minimum time before a new point in the line is created, higher value results in fewer lines in each segment but less smooth curves
+   
     float m_LineTimer_Current_NewLine = 0.0f;
     float m_LineTimer_Current_UpdateLine = 0.0f;
 
+    public GameObject m_CurrentLine;
+    public ObjectLine m_CurrentLineScript;
 
-    public GameObject currentLine;
+    public LineRenderer m_CurrentLineRenderer;
+    public EdgeCollider2D m_CurrentLinesEdgeCollider;
+    public List<Vector2> m_List_CurrentLinesPositions;
 
-    public LineRenderer lineRenderer;
-    public EdgeCollider2D edgeCollider;
-    public List<Vector2> m_List_objectPositions;
+    public void Lines_SetLineDrawingActivation(bool isActive) { m_Lines_DrawLinesIsActive = isActive; }
+    bool m_Lines_DrawLinesIsActive = false;
 
     Vector3 Lines_GetLineDrawPosition()
     {
         return m_GameObj_RotateBody.transform.position;
     }
-    void Lines_UpdateTimers(float deltaTime)
-    {
-        m_LineTimer_Current_NewLine -= deltaTime;
-        m_LineTimer_Current_UpdateLine -= deltaTime;
-    }
 
-    /*void UpdateObjectPosition()
-    {
-        m_List_objectPositions.Add(m_GameObj_RotateBody.transform.position);
-    }*/
+    // Line creation
     void Lines_NewCreateLine()
     {
         m_LineTimer_Current_NewLine = LINE_TIMER_MAX;
 
         // get last point from previous line if it exists, it will be a good starting point, otherwise, use the ships rotating body
         Vector3 lineStartPos = Lines_GetLineDrawPosition();
-        if (m_List_objectPositions.Count > 0)
-            lineStartPos = m_List_objectPositions[m_List_objectPositions.Count - 1];
-        m_List_objectPositions.Clear();
-        m_List_objectPositions.Add(lineStartPos);
-        m_List_objectPositions.Add(Lines_GetLineDrawPosition());
+        if (m_List_CurrentLinesPositions.Count > 0)
+            lineStartPos = m_List_CurrentLinesPositions[m_List_CurrentLinesPositions.Count - 1];
+        m_List_CurrentLinesPositions.Clear();
+        m_List_CurrentLinesPositions.Add(lineStartPos);
+        m_List_CurrentLinesPositions.Add(Lines_GetLineDrawPosition());
 
-        currentLine = Instantiate(Prefab_Line, Vector3.zero, Quaternion.identity);
-        lineRenderer = currentLine.GetComponent<LineRenderer>();
-        edgeCollider = currentLine.GetComponent<EdgeCollider2D>();
-        
-        lineRenderer.SetPosition(0, m_List_objectPositions[0]);
-        lineRenderer.SetPosition(1, m_List_objectPositions[1]);
-        edgeCollider.points = m_List_objectPositions.ToArray();
+        m_CurrentLine = Instantiate(Prefab_Line, Vector3.zero, Quaternion.identity);
+        ObjectLine newLine = m_CurrentLine.GetComponent<ObjectLine>();
 
-        lineRenderer.startColor = m_ShipsColor;
-        lineRenderer.endColor = m_ShipsColor;
-        lineRenderer.material.color = m_ShipsColor;
+        if (m_CurrentLineScript != null)
+        {
+            m_CurrentLineScript.m_NextLineLine = newLine;
+            newLine.m_PreviousLine = m_CurrentLineScript;
+        }
+        m_CurrentLineScript = newLine;
 
-        currentLine.gameObject.transform.SetParent(m_LineHolderObject.transform);
+        m_CurrentLineRenderer = m_CurrentLine.GetComponent<LineRenderer>();
+        m_CurrentLinesEdgeCollider = m_CurrentLine.GetComponent<EdgeCollider2D>();
+
+        m_CurrentLineRenderer.SetPosition(0, m_List_CurrentLinesPositions[0]);
+        m_CurrentLineRenderer.SetPosition(1, m_List_CurrentLinesPositions[1]);
+        m_CurrentLinesEdgeCollider.points = m_List_CurrentLinesPositions.ToArray();
+
+        m_CurrentLineRenderer.startColor = m_ShipsColor;
+        m_CurrentLineRenderer.endColor = m_ShipsColor;
+        m_CurrentLineRenderer.material.color = m_ShipsColor;
+
+        m_CurrentLine.gameObject.transform.SetParent(m_LineHolderObject.transform);
     }
 
     void Lines_UpdateLine_AddNewPoint()
     {
         m_LineTimer_Current_UpdateLine = LINE_UPDATE_INTERVAL;
 
-        m_List_objectPositions.Add(Lines_GetLineDrawPosition());
-        lineRenderer.positionCount++;
-        //lineRenderer.SetPosition(lineRenderer.positionCount - 1, transform.position);
-        edgeCollider.points = m_List_objectPositions.ToArray();
+        m_List_CurrentLinesPositions.Add(Lines_GetLineDrawPosition());
+        m_CurrentLineRenderer.positionCount++;
+        m_CurrentLinesEdgeCollider.points = m_List_CurrentLinesPositions.ToArray();
+    }
+
+    // Line updates and timers
+    void Lines_UpdateTimers(float deltaTime)
+    {
+        m_LineTimer_Current_NewLine -= deltaTime;
+        m_LineTimer_Current_UpdateLine -= deltaTime;
+    }
+    void Lines_CheckLineTimers()
+    {
+        if (m_CurrentLineRenderer == null)
+            Lines_NewCreateLine();
+
+        // add points if timer <= 0, but only if the ship is rotating
+        if (m_LineTimer_Current_UpdateLine <= 0.0f && Rotation_CheckIfSameAngleSinceLastUpdate() == false)
+        {
+            Lines_UpdateLine_AddNewPoint();
+        }
+
+        Lines_UpdateLine_UpdateLatestPoint();
+
+        if (m_LineTimer_Current_NewLine <= 0.0f)
+        {
+            Lines_NewCreateLine();
+        }
     }
 
     void Lines_UpdateLine_UpdateLatestPoint()
     {
-        m_List_objectPositions[m_List_objectPositions.Count - 1] = Lines_GetLineDrawPosition();
+        m_List_CurrentLinesPositions[m_List_CurrentLinesPositions.Count - 1] = Lines_GetLineDrawPosition();
 
-        lineRenderer.SetPosition(lineRenderer.positionCount - 1, m_List_objectPositions[m_List_objectPositions.Count - 1]);
-        edgeCollider.points = m_List_objectPositions.ToArray();
+        m_CurrentLineRenderer.SetPosition(m_CurrentLineRenderer.positionCount - 1, m_List_CurrentLinesPositions[m_List_CurrentLinesPositions.Count - 1]);
+        m_CurrentLinesEdgeCollider.points = m_List_CurrentLinesPositions.ToArray();
         
     }
-
-
-
-
-
 
 
 }

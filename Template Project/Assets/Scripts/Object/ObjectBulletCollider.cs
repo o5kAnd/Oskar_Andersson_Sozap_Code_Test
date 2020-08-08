@@ -9,23 +9,6 @@ public class ObjectBulletCollider : MonoBehaviour
 
     public ObjectBulletMain m_MainScript;
 
-    /*void OnTriggerEnter2D(Collider2D collider)
-    {
-        if (collider != null)
-        {
-            GameObject obj = collider.gameObject;
-            if (obj != null)
-            {
-                //Debug.Log("tag " + obj.tag);
-                if (obj.tag == "Player")
-                    PlayerColliding(obj);
-                else if (obj.tag == "Line")
-                    LineColliding(obj);
-            }
-        }
-    }*/
-
-
     public void LinecastCheck(Vector3 direction, Vector3 deltaMove)
     {
         Vector3 pos1 = transform.position;
@@ -60,7 +43,8 @@ public class ObjectBulletCollider : MonoBehaviour
     }
     void LineColliding(GameObject line)
     {
-        line.AddComponent<SelfDestructionScript>().InitSelfDestruction();
+        ObjectLine lineScript = line.GetComponent<ObjectLine>();
+        lineScript.DestroyLine(transform.position, true);
         m_MainScript.Destroy();
     }
 

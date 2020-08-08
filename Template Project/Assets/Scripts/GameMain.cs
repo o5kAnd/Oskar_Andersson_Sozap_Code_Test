@@ -4,6 +4,7 @@ using UnityEngine;
 
 public partial class GameMain : MonoBehaviour
 {
+    // The main script, it controls the game states and fundamental functions
     public GameObject Prefab_UI_Main;
     public GameObject Prefab_UI_ScoreHolder;
     public GameObject Prefab_UI_CountDownText;
@@ -85,7 +86,7 @@ public partial class GameMain : MonoBehaviour
             num = PLAYER_AMOUNT_MIN;
 
         if (numberOfPlayersActive != num)
-            ObjectManager.GetObjectManager().SynchPlayerShipsToPlayerNum(num);
+            ObjectManager.GetObjectManager().Ship_SynchToPlayerNum(num);
 
         numberOfPlayersActive = num;
     }
@@ -130,7 +131,6 @@ public partial class GameMain : MonoBehaviour
     void Start()
     {
         // Init all managers
-        ObjectManager.GetObjectManager().Init();
         GameStates_InitState();
         GameStates_ChangeState(GAME_STATE.PLAYERS_PICK_MENU);
     }
@@ -200,12 +200,29 @@ public partial class GameMain : MonoBehaviour
 
     const int SCORE_AMOUNT_PER_WIN = 30;
     const int SCORE_AMOUNT_FOR_END = 150;
+    bool endMatch_Inited = false;
     public void CheckWinner()
     {
-        ObjectManager o = ObjectManager.GetObjectManager();
-        int numShipsLeft = o.CheckWinner_GetNumbersOfShipsLeft();
-        if(numShipsLeft <= 1)
+        if(endMatch_Inited == false)
         {
+            ObjectManager o = ObjectManager.GetObjectManager();
+            int numShipsLeft = o.CheckWinner_GetNumbersOfShipsLeft();
+            if (numShipsLeft <= 1)
+            {
+                o.Ship_SetDrawingActivity(false);
+                endMatch_Inited = true;
+                Invoke("EndMatch", 0.5f);
+            }
+        }
+    }
+
+    public void EndMatch()
+    {
+        if (endMatch_Inited == true)
+        {
+            endMatch_Inited = false;
+            ObjectManager o = ObjectManager.GetObjectManager();
+            int numShipsLeft = o.CheckWinner_GetNumbersOfShipsLeft();
             if (numShipsLeft == 1)
             {
                 int winnerId = o.CheckWinner_GetPlayerIdFromShip(0);
@@ -245,7 +262,7 @@ public partial class GameMain : MonoBehaviour
         m_UI_Main.Init(numberOfPlayersActive);
         SetNumberOfPlayers(numberOfPlayersActive);
         ResetPlayerScores();
-        ObjectManager.GetObjectManager().SynchPlayerShipsToPlayerNum(numberOfPlayersActive);
+        ObjectManager.GetObjectManager().Ship_SynchToPlayerNum(numberOfPlayersActive);
     }
     public void State_PlayerPickMenu_ExitState()
     {
@@ -278,7 +295,8 @@ public partial class GameMain : MonoBehaviour
     //---- IN GAME STATE ----------------
     public void State_InGame_EnterState()
     {
-        ObjectManager.GetObjectManager().SetShipsIconVisibility(true);
+        ObjectManager.GetObjectManager().Ship_SetIconVisibility(true);
+        ObjectManager.GetObjectManager().Ship_SetDrawingActivity(true);
         for (int i = 0; i < m_List_Players.Count; ++i)
             m_List_Players[i].UpdatePreviousMatchScore();
     }
@@ -303,7 +321,7 @@ public partial class GameMain : MonoBehaviour
     public void State_ShowScore_ExitState()
     {
         ObjectManager.GetObjectManager().Bullet_RemoveAllBullets();
-        ObjectManager.GetObjectManager().SynchPlayerShipsToPlayerNum(numberOfPlayersActive);
+        ObjectManager.GetObjectManager().Ship_SynchToPlayerNum(numberOfPlayersActive);
     }
     public void State_ShowScore_Update(float deltaTime)
     {
