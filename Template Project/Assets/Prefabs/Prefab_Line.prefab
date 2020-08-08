@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 6968883586423464564}
   - component: {fileID: 2314239025937037590}
   - component: {fileID: 3000073604110688718}
-  - component: {fileID: -5272048588886086697}
   m_Layer: 0
   m_Name: Prefab_Line
   m_TagString: Line
@@ -148,15 +147,3 @@ EdgeCollider2D:
   m_Points:
   - {x: -0.49848008, y: 0.082795985}
   - {x: 5.00152, y: 0.082795985}
---- !u!114 &-5272048588886086697
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 786581342580358344}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d6bab6e2fd5a7fe4395307a710265090, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 

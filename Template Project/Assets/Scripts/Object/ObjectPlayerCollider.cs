@@ -9,10 +9,8 @@ public class ObjectPlayerCollider : MonoBehaviour
 
     public void LinecastCheck(Vector3 direction, Vector3 deltaMove)
     {
-        Vector3 extraMargin = direction * 0.5f;
-
-        Vector3 pos1 = transform.position + (direction * 0.5f);
-        Vector3 pos2 = pos1 + deltaMove + extraMargin;
+        Vector3 pos1 = transform.position + direction * 1.0f;
+        Vector3 pos2 = pos1 + deltaMove;
 
         var Coll = Physics2D.Linecast(pos2, pos1);
         if (Coll.collider != null)
@@ -22,7 +20,7 @@ public class ObjectPlayerCollider : MonoBehaviour
             if (obj.tag == "Player")
                 ShipColliding(obj);
             else if (obj.tag == "Line")
-                LineColliding(obj, Coll.point);
+                LineColliding(obj);
         }    
     }
 
@@ -52,12 +50,11 @@ public class ObjectPlayerCollider : MonoBehaviour
         return false;
     }
 
-    void LineColliding(GameObject line, Vector2 collisionPosition)
+    void LineColliding(GameObject line)
     {
         if(m_MainScript.Invincibility_GetIfInvincible() == false)
         {
-            ObjectLine lineScript = line.GetComponent<ObjectLine>();
-            lineScript.DestroyLine(new Vector3(collisionPosition.x, collisionPosition.y, 0.0f), true);
+            line.AddComponent<SelfDestructionScript>().InitSelfDestruction();
             m_MainScript.Destroy();
         }
     }

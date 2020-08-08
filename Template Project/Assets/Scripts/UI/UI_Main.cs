@@ -5,8 +5,6 @@ using UnityEngine;
 
 public class UI_Main : MonoBehaviour
 {
-    // The main script for the player select UI
-
     public GameObject Prefab_UI_PlayerBox;
 
     public GameObject m_MainContentHolder;
@@ -21,9 +19,14 @@ public class UI_Main : MonoBehaviour
     }
     public void InitAllPlayerBoxes(int numPlayers)
     {
+        //m_List_PlayerBoxes.Clear();
         for (int i = 0; i < GameMain.GetGameMain().GetPlayerListSize(); ++i)
+        {
+            //GameObject obj = Instantiate(Prefab_UI_PlayerBox, Vector2.zero, Quaternion.identity);
+            //UI_Player p = obj.GetComponent<UI_Player>();
             m_List_PlayerBoxes[i].Init(GameMain.GetGameMain().GetPlayerInfo(i), m_MainContentHolder);
-
+            //m_List_PlayerBoxes.Add(p);
+        }
         UpdateActiveGameBoxes(numPlayers);
         m_Text_NumPlayers.text = "" + numPlayers;
     }
@@ -35,6 +38,11 @@ public class UI_Main : MonoBehaviour
 
         for (int i = numPlayers; i < m_List_PlayerBoxes.Count; ++i)
             m_List_PlayerBoxes[i].gameObject.SetActive(false);
+    }
+
+    public void AdjustPlayerBoxesBasedOnPlayerNum(int num)
+    {
+
     }
 
     public void ButtonPressed_StartGame()

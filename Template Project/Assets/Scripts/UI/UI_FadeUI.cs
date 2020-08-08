@@ -5,14 +5,13 @@ using UnityEngine;
 
 public class UI_FadeUI : MonoBehaviour// should be assigned to the main holder parent
 {
-    // This class is designed to fade all the objects child UI parts (Text and Images)
-    // It contains a fade in and fade out part
-    // the fade is a transition of alpha value on each UI object
+
 
     Text[] m_Array_Texts;
     List<float> m_List_TextsDefaultAlpha = new List<float>();
     Image[] m_Array_Images;
     List<float> m_List_ImagesDefaultAlpha = new List<float>();
+
 
     public void Init(float fadeInTime, float fadeOutTime)
     {
@@ -35,16 +34,7 @@ public class UI_FadeUI : MonoBehaviour// should be assigned to the main holder p
         SetAlpha(0);
     }
 
-    void Update()
-    {
-        float deltaTime = Time.deltaTime;
-        Update_FadeIn(deltaTime);
-        Update_FadeOut(deltaTime);
-    }
 
-
-
-    //------- FADE IN SECTION------------------
 
     bool m_FadeIn_Active = false;
     float m_FadeIn_TotalTime = 0.0f;
@@ -80,8 +70,6 @@ public class UI_FadeUI : MonoBehaviour// should be assigned to the main holder p
     }
 
 
-    //------- FADE OUT SECTION------------------
-
     bool m_FadeOut_Active = false;
     float m_FadeOut_TotalTime = 0.0f;
     float m_FadeOut_CurrentTime = 0.0f;
@@ -92,15 +80,14 @@ public class UI_FadeUI : MonoBehaviour// should be assigned to the main holder p
         if (m_FadeOut_TotalTime > 0.0f)
         {
             m_FadeOut_Active = true;
-            // This is if an object is not finished with the fade in, it should then use the current alpha value as reference in the fadeout.
-            if (m_FadeIn_Active == true) 
+            SetAlpha(1.0f);
+            if (m_FadeIn_Active == true)
             {
                 m_FadeIn_Active = false;
                 m_FadeOut_AlphaFromUnfinishedFadeIn = m_FadeIn_CurrentTime / m_FadeIn_TotalTime;
             }
             else
                 m_FadeOut_AlphaFromUnfinishedFadeIn = 1.0f;
-            SetAlpha(m_FadeOut_AlphaFromUnfinishedFadeIn);
         }
         else
             SetAlpha(0.0f);
@@ -120,15 +107,15 @@ public class UI_FadeUI : MonoBehaviour// should be assigned to the main holder p
             {
                 m_FadeOut_Active = false;
                 SetAlpha(0.0f);
-            }  
+            }
+                
         }
+
     }
-
-
-    // ------ specific functions used in fade in/out -----------------------
 
     void SetAlpha(float alphaVal)
     {
+        //Debug.Log("ALPHA VAL: " + alphaVal);
         for (int i = 0; i < m_Array_Texts.Length; ++i)
             m_Array_Texts[i].color = GetColorWithNewAlpha(m_Array_Texts[i].color, m_List_TextsDefaultAlpha[i] * alphaVal);
 
@@ -141,4 +128,10 @@ public class UI_FadeUI : MonoBehaviour// should be assigned to the main holder p
         return new Color(color.r, color.g, color.b, newAlpha);
     }
 
+    void Update()
+    {
+        float deltaTime = Time.deltaTime;
+        Update_FadeIn(deltaTime);
+        Update_FadeOut(deltaTime);
+    }
 }

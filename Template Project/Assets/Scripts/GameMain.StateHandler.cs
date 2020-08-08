@@ -6,7 +6,6 @@ public enum GAME_STATE { STARTING, PLAYERS_PICK_MENU, PRE_GAME, IN_GAME, SHOW_SC
 public partial class GameMain : MonoBehaviour
 {
     //---- game state management
-    // an expansion of GameMain to separate the state specific functions
     class GameState_Virtual
     {
         protected GameMain m_MainRef;

@@ -5,9 +5,6 @@ using UnityEngine;
 
 public class UI_CountDownText : MonoBehaviour
 {
-    // a Count down specifically designed for UI text manipulations
-    // manipulation includes 2 main parts (introduction/start and end), where one can decide how the text change in size and transparency over time
-
     public Text m_Text;
     float m_TimeDisplayed;
     float m_CurrentTimer;
@@ -42,7 +39,7 @@ public class UI_CountDownText : MonoBehaviour
     float m_StartTime = 0.0f;
     float m_StartCurve = 1.0f;
     float m_StartAlpha = 1.0f;
-    //float m_Start_CurrentTime = 0.0f;
+    float m_Start_CurrentTime = 0.0f;
 
     // function that will be active at the beginning of texts display time
     // startSizeFactor & fadeFromAlphaVal = start value from 0 - 1 of what size or alpha the text have
@@ -54,7 +51,7 @@ public class UI_CountDownText : MonoBehaviour
         m_StartTime = time;
         m_StartCurve = curve;
         m_StartAlpha = fadeFromAlphaVal;
-        //m_Start_CurrentTime = 0.0f;
+        m_Start_CurrentTime = 0.0f;
     }
 
     bool Intro_Update(float currentTime) // returns true if modifications is run, this is so End_Update wont run until this is finished
@@ -87,7 +84,7 @@ public class UI_CountDownText : MonoBehaviour
     float m_EndTime = 0.0f;
     float m_EndCurve = 1.0f;
     float m_EndAlpha = 1.0f;
-    //float m_EndCurrentTime = 0.0f;
+    float m_End_CurrentTime = 0.0f;
 
     // the same principle as "SetIntroductionSettings"
     public void SetEndSettings(float endSizeFactor, float fadeToAlphaVal, float time, float curve)
@@ -96,7 +93,7 @@ public class UI_CountDownText : MonoBehaviour
         m_EndTime = time;
         m_EndCurve = curve;
         m_EndAlpha = fadeToAlphaVal;
-        //m_EndCurrentTime = 0.0f;
+        m_End_CurrentTime = 0.0f;
     }
 
     void End_Update(float currentTime, float maxTime)
