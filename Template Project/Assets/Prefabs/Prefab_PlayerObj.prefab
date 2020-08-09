@@ -136,11 +136,11 @@ MonoBehaviour:
   m_Text_ScoreIcon: {fileID: 4434079060030799034}
   m_GameObj_RotateBody: {fileID: 2823190339425467680}
   m_LineHolderObject: {fileID: 0}
-  currentLine: {fileID: 0}
-  currentLineScript: {fileID: 0}
-  lineRenderer: {fileID: 0}
-  edgeCollider: {fileID: 0}
-  m_List_objectPositions: []
+  m_CurrentLine: {fileID: 0}
+  m_CurrentLineScript: {fileID: 0}
+  m_CurrentLineRenderer: {fileID: 0}
+  m_CurrentLinesEdgeCollider: {fileID: 0}
+  m_List_CurrentLinesPositions: []
 --- !u!1 &1358316571729204686
 GameObject:
   m_ObjectHideFlags: 0
@@ -868,6 +868,12 @@ PrefabInstance:
       propertyPath: m_Name
       value: ScoreTextIcon
       objectReference: {fileID: 0}
+    - target: {fileID: 2287872635003556261, guid: d3f80c5da6def214d85e6c16778e03c5,
+        type: 3}
+      propertyPath: m_FontData.m_Font
+      value: 
+      objectReference: {fileID: 12800000, guid: 4506bf6ca285b494ab0993e12703d5e6,
+        type: 3}
     - target: {fileID: 2287872635003600519, guid: d3f80c5da6def214d85e6c16778e03c5,
         type: 3}
       propertyPath: m_RootOrder

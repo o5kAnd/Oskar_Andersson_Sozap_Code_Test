@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class ObjectLine : MonoBehaviour
 {
-    // attached to each line segment, handles destruction of the segment and maybe on on of its neighbors
+    //This script is attached to each line segment, handles destruction of the segment and maybe on one of its neighbors
     public ObjectLine m_PreviousLine = null;
     public ObjectLine m_NextLineLine = null;
 
@@ -17,6 +17,9 @@ public class ObjectLine : MonoBehaviour
 
     void DestroyNearestNeighbour(Vector3 colliderPos)
     {
+        // destroy the nearest line neighbor based on the collision pos, this is done so that destruction of lines is more centered.
+        //if on the edge, compare current line distance to its only neighbor and the neighbor with the colliders pos, if collider is closer then current line, destroy the neighbor, otherwise the collider is near the edge.
+        // the position of a line segment is based on the mean position of its points
         if(m_PreviousLine != null && m_NextLineLine != null)
         {
             if (GetSquaredLength(colliderPos, GetLinesMeanPosition(m_PreviousLine.gameObject)) < GetSquaredLength(colliderPos, GetLinesMeanPosition(m_NextLineLine.gameObject)))

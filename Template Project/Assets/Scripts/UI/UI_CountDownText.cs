@@ -5,10 +5,16 @@ using UnityEngine;
 
 public class UI_CountDownText : MonoBehaviour
 {
-    // a Count down specifically designed for UI text manipulations
-    // manipulation includes 2 main parts (introduction/start and end), where one can decide how the text change in size and transparency over time
+    // a Count down specifically designed for UI text manipulations.
+    // Manipulation includes 2 main parts (introduction/start and end), where one can decide how the text change in size and transparency over time.
 
+    // The script is used separately from the rest, after initiation, it will do its job and then destroy itself and the game object.
+    // The functions that should be run from outside the script is Init and SetIntro/EndSettings functions 
+
+    // Parts of the UI that is assign in unity editor --------
     public Text m_Text;
+    //-------------------------------
+
     float m_TimeDisplayed;
     float m_CurrentTimer;
     public void Init(string countDownMessage, float timeDisplayed)

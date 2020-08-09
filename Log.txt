@@ -1,0 +1,84 @@
+---------------------------------------------
+Test Finished
+
+Gjorde en del omstrukturering med kod bitar, så en hel del värden kan justeras nu ifrån GameSettings.cs, la även till lite mer kommentarer.
+Har småpillat en hel del med UI samt texten med count down innan match start.
+Räknar även in tiden för denna dokumentation idag samt utbyggnad och testning på annan dator (då utbyggnad ej gick på min dator med denna version av unity)
+
+Ca 7 - 8h arbete
+--------------------
+
+Buggar:
+Listar först moment jag antar ska föreställa buggar, dessa har jag försökt att undvika:
+
+Hänger sig vid draw.
+Mätarna i score menyn beter sig skumt.
+Countdown texten försvinner inte, utan blir bara jätteliten.
+Linje segment ritas ibland inte ut.
+När näst sista spelaren kvar i matchen kolliderar med linje så försvinner hela linjen istället för segment.
+
+Här är några punkter jag är osäker på:
+
+Bullets ger enbart poäng när de träffar andra spelare, vekar lite vekt så har lagt till i ”GameSettings.cs” ”BULLET_CAN_DESTROY_SHIPS” och ”BULLET_CAN_DESTROY_LINES” där man kan reglera vad som sker vid kollision av andra spelare samt linjer.
+
+Score ikonen över skeppet känns lite onödig som den är gjort nu, vet inte om det ska föreställa bugg att den enbart visar de scores man får från matchen av att skjuta andra eller om det är gamedesign beslut, har iaf inte gjort något speciellt med den
+
+Olika tider när en match tar slut som de skeppet som är kvar fortsätter att åka,
+la till ”END_MATCH_TIME_BEFORE_SHOWING_SCORE” i ”GameSettings.cs” där man kan reglera den tiden
+--------------------
+
+Lite problem:
+
+Experimenterade med Unitys UI för att få den flexibel, kom fram till att metoden jag använde för det inte är speciellt smidig, så körde inte den metoden fullt ut, vilket resulterat nu i att vissa UI element behöver man full screen för att se.
+
+Vid git så skrev jag fel vid ett tillfälle och tänkte ångra commiten, antog revert skulle fixat, men osäker på exakt vad den gjorde, lägger iaf med tidigare commit meddelanden inklusive det jag skrivit här i en logfil ifall något inte skulle vara åtkomligt.
+
+
+Tidigare loggar:
+
+---------------------------------------------
+Day 5 Finished
+
+Fixade om lite med linje-kollisions systemet, städa upp i koden, skrev mer kommentarer.
+
+ca 4h
+
+---------------------------------------------
+Day 3.5 Finished & Day 4 Finished
+
+Fixade det sista med UI animationer, fades osv.
+Arbetsprover är basicly klart nu, lite småstädning av kod, lägga till kommentarer samt göra något med vad jag tror är en nolla över skeppet (av de 3 ikonerna).
+
+Fixade score när man skjuter andra spelare.
+Testade igenom lite mer noggrant både referensen och mitt projekt för att hitta fler buggar samt småsaker jag missat.
+
+gissningsvis 7-8h arbetstid totalt idag
+
+---------------------------------------------
+Day 3 Finished
+
+Fixade lite med skott och kollisioner, implementerade score systemet mer ordentligt samt tillhörande UI, såg till att game states nu kan loopa runt bra. Count down systemet blev halvklart behövs storleks modifikation med tid. I övrigt är projektet nästan klart.
+
+Kanske 11h arbete idag
+
+---------------------------------------------
+Day 2 Finished
+
+Fixade rotations delay, blinkning, odödlighet på spelare samt lite småbuggar sedan dagen innan.
+Började med meny UI'n så det går att ändra namn, ställa in spelarmängd samt starta spel.
+La sedan in game state system ordentligt för smidig transition och uppdelning, och då även att spelar skepp spawnas med unika inställningar baserad på spelarmängd.
+
+En del krångel med att få UI'n att vara någorlunda flexibel.
+
+Arbetstid gissningsvis runt 9-10h.
+
+---------------------------------------------
+Day 1 Finished
+
+Satte upp grund strukturen, fokuserade mycket på spelar-skepps objekt, linje dragning och kollision, bråkade en del med text mesh, fick den inte att fungera i game view så körde på standard UI systemet.
+
+Dagens resultat är att skeppet går att styra runt, den ritar efter sig, den kan kollidera, grundläggande ikoner runt skeppet renderas men skott och odödlighet är inte färdig-implementerat
+
+Ungefär arbetstid:
+1-2 timmars uppsättning
+gissningsvis 9h arbetstimmar på själva projektet totalt under dagen, men svårt att beräkna i och med utspridda raster.

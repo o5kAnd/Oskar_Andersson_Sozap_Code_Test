@@ -32,7 +32,7 @@ public partial class GameMain : MonoBehaviour
     {
         public override void UpdateState(float deltaTime)
         {
-
+            m_MainRef.State_PlayerPickMenu_Update(deltaTime);
         }
         public override void EnterState()
         {
@@ -106,6 +106,7 @@ public partial class GameMain : MonoBehaviour
             m_Array_GameStates[i].Init(this);
     }
 
+    //--- This function should be used for changing gamestate
     bool m_GameStateChangeInvoked = false;
     GAME_STATE m_NewGameStateRequested;
     public void GameStates_ChangeState(GAME_STATE newState, float timeUntilStateChange = 0.0f)
@@ -131,7 +132,6 @@ public partial class GameMain : MonoBehaviour
             m_Array_GameStates[m_CurrentGameState].EnterState();
         }
     }
-
 
     int m_CurrentGameState = (int)GAME_STATE.STARTING;
 }

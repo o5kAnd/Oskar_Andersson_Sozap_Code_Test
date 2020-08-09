@@ -5,8 +5,13 @@ using UnityEngine;
 
 public class UI_ScoreMain : MonoBehaviour
 {
+    // The main script for showing the players score and ranking, individual score in in the UI_ScorePlayer
+
+    // Parts of the UI that is assign in unity editor --------
     public RectTransform m_Transform_MainContentHolder;
     public Text m_Text_NextStateButtonText;
+    //----------------------------------------------
+
     public List<UI_ScorePlayer> m_List_PlayerScores = new List<UI_ScorePlayer>();
     public List<GameObject> m_List_RankingObjects = new List<GameObject>();
 
@@ -71,7 +76,7 @@ public class UI_ScoreMain : MonoBehaviour
 
             for (int j = i; j < idRankList.Count; ++j)
             {
-                // switch place if score is higher or if score is the same, prioritase player order
+                // switch place if score is higher or if score is the same, prioritize player order
                 if (m_List_PlayerScores[idRankList[j]].GetScore() > highest || (m_List_PlayerScores[idRankList[j]].GetScore() == highest && idRankList[i] > idRankList[j]))
                 {
                     highest = m_List_PlayerScores[idRankList[j]].GetScore();

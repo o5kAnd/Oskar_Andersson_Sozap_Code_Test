@@ -7,12 +7,15 @@ public class UI_Main : MonoBehaviour
 {
     // The main script for the player select UI
 
+    // Parts of the UI that is assign in unity editor --------
     public GameObject Prefab_UI_PlayerBox;
 
     public GameObject m_MainContentHolder;
 
     public Text m_Text_NumPlayers; 
+    //-------------------------------
 
+    // List for the individual player boxes, the amount == num players
     public List<UI_Player> m_List_PlayerBoxes = new List<UI_Player>();
 
     public void Init(int numPlayers)
@@ -24,11 +27,11 @@ public class UI_Main : MonoBehaviour
         for (int i = 0; i < GameMain.GetGameMain().GetPlayerListSize(); ++i)
             m_List_PlayerBoxes[i].Init(GameMain.GetGameMain().GetPlayerInfo(i), m_MainContentHolder);
 
-        UpdateActiveGameBoxes(numPlayers);
+        UpdateTheNumberOfActivePlayerBoxes(numPlayers);
         m_Text_NumPlayers.text = "" + numPlayers;
     }
 
-    void UpdateActiveGameBoxes(int numPlayers)
+    void UpdateTheNumberOfActivePlayerBoxes(int numPlayers)
     {
         for (int i = 0; i < numPlayers; ++i)
             m_List_PlayerBoxes[i].gameObject.SetActive(true);
@@ -37,6 +40,12 @@ public class UI_Main : MonoBehaviour
             m_List_PlayerBoxes[i].gameObject.SetActive(false);
     }
 
+    //--------------------------------------------------------------------------------
+
+
+
+    //---------------------------------------------------------------
+    // ----------- BUTTON PRESS FUNCTIONS -----------
     public void ButtonPressed_StartGame()
     {
         GameMain.GetGameMain().GameStates_ChangeState(GAME_STATE.PRE_GAME, 0.5f);
@@ -49,7 +58,7 @@ public class UI_Main : MonoBehaviour
         GameMain.GetGameMain().IncreaseNumberOfPlayers();
         int numPlayers = GameMain.GetGameMain().GetNumberOfActivePlayers();
         m_Text_NumPlayers.text = "" + numPlayers;
-        UpdateActiveGameBoxes(numPlayers);
+        UpdateTheNumberOfActivePlayerBoxes(numPlayers);
     }
 
     public void ButtonPressed_DecreaseNumPlayers()
@@ -57,8 +66,10 @@ public class UI_Main : MonoBehaviour
         GameMain.GetGameMain().DecreaseNumberOfPlayers();
         int numPlayers = GameMain.GetGameMain().GetNumberOfActivePlayers();
         m_Text_NumPlayers.text = "" + numPlayers;
-        UpdateActiveGameBoxes(numPlayers);
+        UpdateTheNumberOfActivePlayerBoxes(numPlayers);
     }
+
+    //--------------------------------------------------------------------------------
 
     UI_FadeUI m_FadeScript;
     void Awake()

@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class ObjectBulletMain : MonoBehaviour
 {
+    //--- This main class for Bullets, contains most of the bullet related functions except collision
     public ObjectBulletCollider m_ColliderScript;
 
-    const float BULLET_SPEED_PER_SEC = 20.0f;
     GameMain.PlayerInfo m_PlayerInfo_BulletOwner;
     Vector3 m_MoveDirection;
     Vector3 m_PrevPosition;
@@ -29,7 +29,12 @@ public class ObjectBulletMain : MonoBehaviour
     // Runs from ObjectManager
     public void InGame_Update(float deltaTime)
     {
-        Vector3 deltaMove = m_MoveDirection * deltaTime * BULLET_SPEED_PER_SEC;
+        UpdateMovementAndPerformCollisionCheck(deltaTime);
+    }
+
+    void UpdateMovementAndPerformCollisionCheck(float deltaTime)
+    {
+        Vector3 deltaMove = m_MoveDirection * deltaTime * GameSettings.BULLET_SPEED_PER_SEC;
         m_ColliderScript.LinecastCheck(m_MoveDirection, deltaMove);
         m_PrevPosition = transform.position;
         transform.position += deltaMove;

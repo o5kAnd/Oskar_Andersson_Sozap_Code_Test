@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine;
 
-//--- This main clas of players ship contains many sections of related functions
 public class ObjectPlayerMain : MonoBehaviour
 {
+    //--- This main class for players ship, contains most of the ship related functions except collision
     public GameObject Prefab_Line;
 
     Color m_ShipsColor;
@@ -35,15 +35,15 @@ public class ObjectPlayerMain : MonoBehaviour
 
         m_ShipsColor = m_PlayerInfo_ShipOwner.color;
         m_Renderer_ShipsColorPart.color = m_ShipsColor;
-        transform.position = m_PlayerInfo_ShipOwner.position;
+        transform.position = m_PlayerInfo_ShipOwner.spawnPosition;
         Lines_NewCreateLine();
     }
-    
-    public void SetExtraIconsVisibility(bool isVisible)
+
+    public void SetExtraIconsVisibility(bool isVisible_InvinvibilityIcon, bool isVisible_ShotIcon, bool isVisible_TextIcon)
     {
-        m_Renderer_InvincibilityIcon.gameObject.SetActive(isVisible);
-        m_Renderer_ShotIcon.gameObject.SetActive(isVisible);
-        m_Text_ScoreIcon.transform.parent.gameObject.SetActive(isVisible);
+        m_Renderer_InvincibilityIcon.gameObject.SetActive(isVisible_InvinvibilityIcon);
+        m_Renderer_ShotIcon.gameObject.SetActive(isVisible_ShotIcon);
+        m_Text_ScoreIcon.transform.parent.gameObject.SetActive(isVisible_TextIcon);
     }
 
     // removal of ships should go through this function
@@ -84,10 +84,9 @@ public class ObjectPlayerMain : MonoBehaviour
 
     //---------------------------------------------------------------
     // ----------- MOVEMENT PART -----------
-    const float SHIP_SPEED_PER_SEC_FARWARD = 12.5f;
     void UpdateMovementAndPerformCollisionCheck(float deltaTime)
     {
-        Vector3 deltaMove = m_CurrentDir * deltaTime * SHIP_SPEED_PER_SEC_FARWARD;
+        Vector3 deltaMove = m_CurrentDir * deltaTime * GameSettings.SHIP_SPEED_PER_SEC_FARWARD;
         m_ColliderScript.LinecastCheck(m_CurrentDir, deltaMove);
         transform.position += deltaMove;
     }
@@ -97,10 +96,6 @@ public class ObjectPlayerMain : MonoBehaviour
     //---------------------------------------------------------------
     // ----------- ROTATION PART -----------
 
-    const float ROTATION_MAX_SPEED_PER_SEC = 200.0f;
-    const float ROTATION_INCREASE_SPEED_PER_SEC = 300.0f;
-    const float ROTATION_DECREASE_SPEED_PER_SEC = -400.0f;
-
     float m_Rotation_LeftRotationForce = 0.0f;
     float m_Rotation_RightRotationForce = 0.0f;
 
@@ -108,8 +103,8 @@ public class ObjectPlayerMain : MonoBehaviour
     float Rotation_UpdateRotationSpeedOnSpecificDirection(float currentRotationForce, float increaseInRotationForce)
     {
         currentRotationForce += increaseInRotationForce;
-        if (currentRotationForce > ROTATION_MAX_SPEED_PER_SEC)
-            currentRotationForce = ROTATION_MAX_SPEED_PER_SEC;
+        if (currentRotationForce > GameSettings.SHIP_ROTATION_MAX_SPEED_PER_SEC)
+            currentRotationForce = GameSettings.SHIP_ROTATION_MAX_SPEED_PER_SEC;
         else if (currentRotationForce < 0.0f)
             currentRotationForce = 0.0f;
         return currentRotationForce;
@@ -119,14 +114,14 @@ public class ObjectPlayerMain : MonoBehaviour
     {
         float rotation = 0.0f;
         if (Keys_GetKeyHeld(KEY_REPRESENTATION.RIGHT))
-            m_Rotation_RightRotationForce = Rotation_UpdateRotationSpeedOnSpecificDirection(m_Rotation_RightRotationForce, ROTATION_INCREASE_SPEED_PER_SEC * deltaTime);
+            m_Rotation_RightRotationForce = Rotation_UpdateRotationSpeedOnSpecificDirection(m_Rotation_RightRotationForce, GameSettings.SHIP_ROTATION_INCREASE_SPEED_PER_SEC * deltaTime);
         else
-            m_Rotation_RightRotationForce = Rotation_UpdateRotationSpeedOnSpecificDirection(m_Rotation_RightRotationForce, ROTATION_DECREASE_SPEED_PER_SEC * deltaTime);
+            m_Rotation_RightRotationForce = Rotation_UpdateRotationSpeedOnSpecificDirection(m_Rotation_RightRotationForce, GameSettings.SHIP_ROTATION_DECREASE_SPEED_PER_SEC * deltaTime);
 
         if (Keys_GetKeyHeld(KEY_REPRESENTATION.LEFT))
-            m_Rotation_LeftRotationForce = Rotation_UpdateRotationSpeedOnSpecificDirection(m_Rotation_LeftRotationForce, ROTATION_INCREASE_SPEED_PER_SEC * deltaTime);
+            m_Rotation_LeftRotationForce = Rotation_UpdateRotationSpeedOnSpecificDirection(m_Rotation_LeftRotationForce, GameSettings.SHIP_ROTATION_INCREASE_SPEED_PER_SEC * deltaTime);
         else
-            m_Rotation_LeftRotationForce = Rotation_UpdateRotationSpeedOnSpecificDirection(m_Rotation_LeftRotationForce, ROTATION_DECREASE_SPEED_PER_SEC * deltaTime);
+            m_Rotation_LeftRotationForce = Rotation_UpdateRotationSpeedOnSpecificDirection(m_Rotation_LeftRotationForce, GameSettings.SHIP_ROTATION_DECREASE_SPEED_PER_SEC * deltaTime);
 
         rotation = (m_Rotation_LeftRotationForce - m_Rotation_RightRotationForce) * deltaTime;
 
@@ -188,18 +183,18 @@ public class ObjectPlayerMain : MonoBehaviour
 
     //---------------------------------------------------------------
     // ----------- BULLET SECTION -----------
-    const float BULLET_SPAWN_COOLDOWN = 2.0f;
-    float m_BulletSpawn_Timer = BULLET_SPAWN_COOLDOWN;
+
+    float m_BulletSpawn_Timer = GameSettings.SHIP_BULLET_SHOOTING_COOLDOWN_IN_SEC;
     void BulletSpawn_Update(float deltaTime)
     {
-        if (m_BulletSpawn_Timer >= BULLET_SPAWN_COOLDOWN)
+        if (m_BulletSpawn_Timer >= GameSettings.SHIP_BULLET_SHOOTING_COOLDOWN_IN_SEC)
         {
             m_Renderer_ShotIcon.gameObject.SetActive(true);
             if (Keys_GetKeyPressed(KEY_REPRESENTATION.UP))
             {
                 m_BulletSpawn_Timer = 0.0f;
                 // bullets spawn pos is ships pos + bullet radius + the position the ship will be in next frame
-                Vector3 BulletSpawnPos = transform.position + (m_CurrentDir * 0.5f) + (m_CurrentDir * deltaTime * SHIP_SPEED_PER_SEC_FARWARD);
+                Vector3 BulletSpawnPos = transform.position + (m_CurrentDir * 0.5f) + (m_CurrentDir * deltaTime * GameSettings.SHIP_SPEED_PER_SEC_FARWARD);
                 ObjectManager.GetObjectManager().Bullet_RequestBulletSpawn(transform.position, m_CurrentDir, m_PlayerInfo_ShipOwner);
             }
         }
@@ -220,13 +215,11 @@ public class ObjectPlayerMain : MonoBehaviour
 
     //---------------------------------------------------------------
     // ----------- INVINVIBILITY SECTION -----------
-    const float INVINVIBILITY_TIME = 1.5f;
-    const float INVINVIBILITY_COOLDOWN = INVINVIBILITY_TIME + 4.0f;
     bool m_Invincibility_IsInvincible = false;
-    float m_Invincibility_Timer = INVINVIBILITY_COOLDOWN;
+    float m_Invincibility_Timer = GameSettings.SHIP_INVINCIBILITY_COOLDOWN;
     void Invincibility_Update(float deltaTime)
     {
-        if (m_Invincibility_Timer >= INVINVIBILITY_COOLDOWN)
+        if (m_Invincibility_Timer >= GameSettings.SHIP_INVINCIBILITY_COOLDOWN)
         {
             m_Renderer_InvincibilityIcon.gameObject.SetActive(true);
             if(Keys_GetKeyPressed(KEY_REPRESENTATION.DOWN) == true)
@@ -234,14 +227,14 @@ public class ObjectPlayerMain : MonoBehaviour
                 m_Invincibility_Timer = 0.0f;
                 m_Invincibility_IsInvincible = true;
 
-                Blinking_StartBlinking(INVINVIBILITY_TIME, 2, 0.4f);
+                Blinking_StartBlinking(GameSettings.SHIP_INVINCIBILITY_TIME, 2, 0.4f);
             }
         }
         else
         {
             m_Renderer_InvincibilityIcon.gameObject.SetActive(false);
             m_Invincibility_Timer += deltaTime;
-            if (m_Invincibility_Timer >= INVINVIBILITY_TIME)
+            if (m_Invincibility_Timer >= GameSettings.SHIP_INVINCIBILITY_TIME)
             {
                 m_Invincibility_IsInvincible = false;
             }
@@ -348,6 +341,9 @@ public class ObjectPlayerMain : MonoBehaviour
     public LineRenderer m_CurrentLineRenderer;
     public EdgeCollider2D m_CurrentLinesEdgeCollider;
     public List<Vector2> m_List_CurrentLinesPositions;
+    //using the Vector2 list above as the main holder for positions in the line segment, it is then copied to the line renderer and its edge collider, 
+    //copying whole arrays often in runtime is not very optimal, but in the case of the edge collider, the line segments is quite short
+    //and its only updating the line the ship is currently drawing, so the cost shouldn't be to severe.
 
     public void Lines_SetLineDrawingActivation(bool isActive) { m_Lines_DrawLinesIsActive = isActive; }
     bool m_Lines_DrawLinesIsActive = false;
@@ -366,6 +362,7 @@ public class ObjectPlayerMain : MonoBehaviour
         Vector3 lineStartPos = Lines_GetLineDrawPosition();
         if (m_List_CurrentLinesPositions.Count > 0)
             lineStartPos = m_List_CurrentLinesPositions[m_List_CurrentLinesPositions.Count - 1];
+
         m_List_CurrentLinesPositions.Clear();
         m_List_CurrentLinesPositions.Add(lineStartPos);
         m_List_CurrentLinesPositions.Add(Lines_GetLineDrawPosition());
@@ -434,7 +431,6 @@ public class ObjectPlayerMain : MonoBehaviour
 
         m_CurrentLineRenderer.SetPosition(m_CurrentLineRenderer.positionCount - 1, m_List_CurrentLinesPositions[m_List_CurrentLinesPositions.Count - 1]);
         m_CurrentLinesEdgeCollider.points = m_List_CurrentLinesPositions.ToArray();
-        
     }
 
 

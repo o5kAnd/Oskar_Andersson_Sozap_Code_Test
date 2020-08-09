@@ -5,12 +5,15 @@ using UnityEngine;
 
 public class UI_ScorePlayer : MonoBehaviour
 {
+    // This script is for handling the individual players score, it also manage the visuals like filling the scorebar
+
+    // Parts of the UI that is assign in unity editor --------
     public Text m_Text_RankNumber;
     public Text m_Text_Points;
     public Text m_Text_PlayerName;
     public Text m_Text_Winner;
     public Image m_Image_ColorIndicator;
-
+    //----------------------------------------------
     public Image m_Image_ScoreBar;
     public RectTransform m_RectTransform_ScoreBar;
 
@@ -62,13 +65,22 @@ public class UI_ScorePlayer : MonoBehaviour
     {
         m_Text_Winner.gameObject.SetActive(active);
     }
+
+    bool activateWinnerAnimation = false;
     void SetWinner()
     {
         SetWinnerTextActivation(true);
-        Animator animator = gameObject.GetComponent<Animator>();
-        if (animator != null)
-            animator.SetBool("isWinner", true);
-
+        activateWinnerAnimation = true;
+    }
+    void PlayWinnerAnimation()
+    {
+        if(activateWinnerAnimation == true)
+        {
+            activateWinnerAnimation = false;
+            Animator animator = gameObject.GetComponent<Animator>();
+            if (animator != null)
+                animator.SetBool("isWinner", true);
+        }
     }
 
     float GetScoreBarWidth(float currentScore, float maxScore)
@@ -92,7 +104,11 @@ public class UI_ScorePlayer : MonoBehaviour
         {
             float time = m_FillScorebar_CurrentTime - FILL_SCORE_BAR_TIME_UNTIL_START;
             if (time > 1.0f)
+            {
+                PlayWinnerAnimation();
                 time = 1.0f;
+            }
+                
 
             float prev = GetScoreBarWidth(m_PrevScore, m_MaxScore);
             float current = GetScoreBarWidth(m_CurrentScore, m_MaxScore);

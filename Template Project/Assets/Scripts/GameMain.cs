@@ -14,6 +14,10 @@ public partial class GameMain : MonoBehaviour
     private static GameMain SelfPointer;
     static public GameMain GetGameMain() {   return SelfPointer; }
 
+    //------------- PLAYER INFO SECTION -----------------------
+    // This class contains all important player information, 
+    // reference's of this will be passed to different objects and used to check information such as ownership, 
+    // also to adjust some data like adding scores
     public class PlayerInfo
     {
         public PlayerInfo(string name, int listId, Vector2 spawnPosition, Color color, KeyCode upKey, KeyCode downKey, KeyCode leftKey, KeyCode rightKey)
@@ -22,7 +26,7 @@ public partial class GameMain : MonoBehaviour
             this.listId = listId;
             this.score = 0;
             this.score_PrevRound = 0;
-            this.position = spawnPosition;
+            this.spawnPosition = spawnPosition;
             this.color = color;
             this.upKey = upKey;
             this.downKey = downKey;
@@ -30,10 +34,14 @@ public partial class GameMain : MonoBehaviour
             this.rightKey = rightKey;
         }
 
-
-
         public string name;
         public int listId;
+        public Vector2 spawnPosition;
+        public Color color;
+        public KeyCode upKey;
+        public KeyCode downKey;
+        public KeyCode leftKey;
+        public KeyCode rightKey;
 
         //--- Scores ----
         int score;
@@ -55,20 +63,13 @@ public partial class GameMain : MonoBehaviour
             score = 0;
             score_PrevRound = 0;
         }
-
-
-        public Vector2 position;
-        public Color color;
-        public KeyCode upKey;
-        public KeyCode downKey;
-        public KeyCode leftKey;
-        public KeyCode rightKey;
+        //---
     }
-
-    List<PlayerInfo> m_List_Players = new List<PlayerInfo>();
 
     const int PLAYER_AMOUNT_MAX = 4;
     const int PLAYER_AMOUNT_MIN = 2;
+
+    List<PlayerInfo> m_List_Players = new List<PlayerInfo>();
     public void IncreaseNumberOfPlayers()
     {
         SetNumberOfPlayers(numberOfPlayersActive + 1);        
@@ -96,7 +97,6 @@ public partial class GameMain : MonoBehaviour
 
 
     Vector2 m_Position_MidPointPlayerSpawnOffset = new Vector2(2.0f, 2.0f);
-
     void ResetPlayerScores()
     {
         for (int i = 0; i < m_List_Players.Count; ++i)
@@ -106,10 +106,10 @@ public partial class GameMain : MonoBehaviour
     {
         Vector2 p = m_Position_MidPointPlayerSpawnOffset;
         m_List_Players.Clear();
-        m_List_Players.Add(new PlayerInfo("Player 1", m_List_Players.Count, new Vector2(p.x, p.y), Color.red, KeyCode.W, KeyCode.S, KeyCode.A, KeyCode.D));
-        m_List_Players.Add(new PlayerInfo("Player 2", m_List_Players.Count, new Vector2(p.x, p.y), Color.green, KeyCode.Y, KeyCode.H, KeyCode.G, KeyCode.J));
-        m_List_Players.Add(new PlayerInfo("Player 3", m_List_Players.Count, new Vector2(p.x, p.y), Color.yellow, KeyCode.UpArrow, KeyCode.DownArrow, KeyCode.LeftArrow, KeyCode.RightArrow));
-        m_List_Players.Add(new PlayerInfo("Player 4", m_List_Players.Count, new Vector2(p.x, p.y), Color.blue, KeyCode.Keypad8, KeyCode.Keypad5, KeyCode.Keypad4, KeyCode.Keypad6));
+        m_List_Players.Add(new PlayerInfo("Player 1", m_List_Players.Count, new Vector2(p.x, p.y), GameSettings.GetPlayerOneColor(), GameSettings.PLAYER_ONE_KEY_UP, GameSettings.PLAYER_ONE_KEY_DOWN, GameSettings.PLAYER_ONE_KEY_LEFT, GameSettings.PLAYER_ONE_KEY_RIGHT));
+        m_List_Players.Add(new PlayerInfo("Player 2", m_List_Players.Count, new Vector2(p.x, p.y), GameSettings.GetPlayerTwoColor(), GameSettings.PLAYER_TWO_KEY_UP, GameSettings.PLAYER_TWO_KEY_DOWN, GameSettings.PLAYER_TWO_KEY_LEFT, GameSettings.PLAYER_TWO_KEY_RIGHT));
+        m_List_Players.Add(new PlayerInfo("Player 3", m_List_Players.Count, new Vector2(p.x, p.y), GameSettings.GetPlayerThreeColor(), GameSettings.PLAYER_THREE_KEY_UP, GameSettings.PLAYER_THREE_KEY_DOWN, GameSettings.PLAYER_THREE_KEY_LEFT, GameSettings.PLAYER_THREE_KEY_RIGHT));
+        m_List_Players.Add(new PlayerInfo("Player 4", m_List_Players.Count, new Vector2(p.x, p.y), GameSettings.GetPlayerFourColor(), GameSettings.PLAYER_FOUR_KEY_UP, GameSettings.PLAYER_FOUR_KEY_DOWN, GameSettings.PLAYER_FOUR_KEY_LEFT, GameSettings.PLAYER_FOUR_KEY_RIGHT));
     }
 
     public PlayerInfo GetPlayerInfo(int playerId)
@@ -121,47 +121,28 @@ public partial class GameMain : MonoBehaviour
         return m_List_Players.Count;
     }
 
+    //--------------------------------------------------------------------------------
 
-    void Awake()
-    {
-        SelfPointer = this;
-        RenderSettings.ambientLight = Color.white;
-        InitAllPlayers();
-    }
-    void Start()
-    {
-        // Init all managers
-        GameStates_InitState();
-        GameStates_ChangeState(GAME_STATE.PLAYERS_PICK_MENU);
-    }
 
-    void Update()
-    {
-        //raycastTest();
 
-        float deltaTime = Time.deltaTime;
-        m_Array_GameStates[m_CurrentGameState].UpdateState(deltaTime);
-    }
-
-    void FixedUpdate()
-    {
-        float deltaTime = Time.fixedDeltaTime;
-    }
-
+    //---------------------------------------------------------------
+    // ----------- COUNT DOWN SECTION -----------
+    // Count down is used in pre-inGame state and consist of the period defined by the constant below
+    // This will also show some information such as which round it is or how much points needed for victory
 
     int CountDown_Round = 0;
     bool CountDown_FirstMessageShowed = false;
-    int CountDown_NumCountsUntilStart = 4;
     int CountDown_CurrentCount = 0;
     float CountDown_Timer = 0.0f;
 
     void CountDown_Reset()
     {
-        CountDown_CurrentCount = CountDown_NumCountsUntilStart;
+        CountDown_CurrentCount = GameSettings.NUMBER_OF_COUNT_DOWN_UNTIL_GAME_START;
         CountDown_Timer = 0.0f;
         CountDown_FirstMessageShowed = false;
     }
 
+    float m_CountDownSizeDisplayFactor = 0.0f;
     void CountDown_Update(float deltaTime)
     {
         if (CountDown_Timer >= 1.0f)
@@ -170,20 +151,21 @@ public partial class GameMain : MonoBehaviour
             CountDown_Timer = 0.0f;
             if (CountDown_FirstMessageShowed == false)
             {
+                m_CountDownSizeDisplayFactor = 0.0f;
                 CountDown_FirstMessageShowed = true;
                 if (CountDown_Round <= 1)
-                    SpawnCountDownUI("First to " + SCORE_AMOUNT_FOR_END +" points", 1.1f);
+                    SpawnCountDownUI("First to " + GameSettings.SCORE_AMOUNT_FOR_TOTAL_VICTORY + " points", 1.0f, m_CountDownSizeDisplayFactor, 0.0f);
                 else
-                    SpawnCountDownUI("Round: " + CountDown_Round, 1.1f);
+                    SpawnCountDownUI("Round: " + CountDown_Round, 1.0f, m_CountDownSizeDisplayFactor, 0.0f);
             }
             else if (CountDown_CurrentCount > 0)
-                SpawnCountDownUI("" + CountDown_CurrentCount, 1.1f);
+            {
+                SpawnCountDownUI("" + CountDown_CurrentCount, 1.0f, m_CountDownSizeDisplayFactor, 0.7f);
+                m_CountDownSizeDisplayFactor = 0.7f;
+            }
             else if(CountDown_CurrentCount == 0)
-                SpawnCountDownUI("Start", 1.0f);
-
-
-        }
-            
+                SpawnCountDownUI("Start", 1.1f, m_CountDownSizeDisplayFactor, 0.0f);
+        } 
         CountDown_Timer += deltaTime;
     }
 
@@ -194,12 +176,25 @@ public partial class GameMain : MonoBehaviour
         return false;
     }
 
+    // size factors is 0-1 val and adjusts how large the text is in relation to its standard size at the beginning and end
+    public void SpawnCountDownUI(string countDownText, float displayTime, float sizeFactorStart, float sizeFactorEnd)
+    {
+        GameObject obj = Instantiate(Prefab_UI_CountDownText, Vector2.zero, Quaternion.identity);
+        UI_CountDownText m_UI_Score = obj.GetComponent<UI_CountDownText>();
+
+        m_UI_Score.Init(countDownText, displayTime);
+        m_UI_Score.SetIntroductionSettings(sizeFactorStart, 1.0f, displayTime * 0.6f, 0.3f);
+        m_UI_Score.SetEndSettings(sizeFactorEnd, 1.0f, displayTime * 0.4f, 0.3f);
+    }
+
+    //--------------------------------------------------------------------------------
 
 
+    //---------------------------------------------------------------
+    // ----------- SCORE AND MATCH END SECTION -----------
+    // This section is used to check if the game ends and should transition to show score state
+    // its start by checking the winner or draw, which is done in the ingame state update, and then proceeds to the EndMatch function.
 
-
-    const int SCORE_AMOUNT_PER_WIN = 30;
-    const int SCORE_AMOUNT_FOR_END = 150;
     bool endMatch_Inited = false;
     public void CheckWinner()
     {
@@ -211,7 +206,10 @@ public partial class GameMain : MonoBehaviour
             {
                 o.Ship_SetDrawingActivity(false);
                 endMatch_Inited = true;
-                Invoke("EndMatch", 0.5f);
+                if (GameSettings.END_MATCH_TIME_BEFORE_SHOWING_SCORE > 0.0f)
+                    Invoke("EndMatch", GameSettings.END_MATCH_TIME_BEFORE_SHOWING_SCORE);
+                else
+                    EndMatch();
             }
         }
     }
@@ -226,30 +224,23 @@ public partial class GameMain : MonoBehaviour
             if (numShipsLeft == 1)
             {
                 int winnerId = o.CheckWinner_GetPlayerIdFromShip(0);
-                m_List_Players[winnerId].AddScore(SCORE_AMOUNT_PER_WIN);
+                m_List_Players[winnerId].AddScore(GameSettings.SCORE_AMOUNT_PER_MATCH_ROUND_WIN);
             }
             GameStates_ChangeState(GAME_STATE.SHOW_SCORE);
         }
     }
 
 
-
-    public void SpawnCountDownUI(string countDownText, float displayTime)
-    {
-        GameObject obj = Instantiate(Prefab_UI_CountDownText, Vector2.zero, Quaternion.identity);
-        UI_CountDownText m_UI_Score = obj.GetComponent<UI_CountDownText>();
-
-        m_UI_Score.Init(countDownText, displayTime);
-        m_UI_Score.SetIntroductionSettings(0.0f, 0.5f, displayTime * 0.6f, 0.3f);
-        m_UI_Score.SetEndSettings(0.0f, 0.5f, displayTime * 0.4f, 0.3f);
-    }
-
+    //--------------------------------------------------------------------------------
 
 
 
 
     //-----------------------------------------------------------------------------
     //---------- STATE SECTION -------------------------------
+    // State functions for each state contains exactly one "Enter", "Exit" and "Update" function
+    // The states are a good way to handle contained Create, Update and Destroy for parts that should only be active in specific game sections
+    // Although practically, many of the functions currently is empty but is there for consistency and potential uses in later version.
 
     //---- PLAYER PICK MENU STATE ----------------
     public void State_PlayerPickMenu_EnterState()
@@ -277,6 +268,7 @@ public partial class GameMain : MonoBehaviour
     public void State_PreGame_EnterState()
     {
         CountDown_Reset();
+        ObjectManager.GetObjectManager().Ship_SetIconVisibility(false, false, true);
     }
     public void State_PreGame_ExitState()
     {
@@ -295,7 +287,7 @@ public partial class GameMain : MonoBehaviour
     //---- IN GAME STATE ----------------
     public void State_InGame_EnterState()
     {
-        ObjectManager.GetObjectManager().Ship_SetIconVisibility(true);
+        ObjectManager.GetObjectManager().Ship_SetIconVisibility(true, true, true);
         ObjectManager.GetObjectManager().Ship_SetDrawingActivity(true);
         for (int i = 0; i < m_List_Players.Count; ++i)
             m_List_Players[i].UpdatePreviousMatchScore();
@@ -316,7 +308,7 @@ public partial class GameMain : MonoBehaviour
         GameObject obj = Instantiate(Prefab_UI_ScoreHolder, Vector2.zero, Quaternion.identity);
         UI_ScoreMain m_UI_Score = obj.GetComponent<UI_ScoreMain>();
 
-        m_UI_Score.Init(SCORE_AMOUNT_FOR_END, numberOfPlayersActive);
+        m_UI_Score.Init(GameSettings.SCORE_AMOUNT_FOR_TOTAL_VICTORY, numberOfPlayersActive);
     }
     public void State_ShowScore_ExitState()
     {
@@ -335,46 +327,24 @@ public partial class GameMain : MonoBehaviour
 
 
 
-
-
-
-
-
-
-
-    Vector2 RayStart = Vector2.zero;
-    Vector2 RayEnd = Vector2.zero;
-    void raycastTest()
+    void Awake()
     {
-        if (Input.GetMouseButton(0))
-        {
-            RayStart = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-
-        }
-
-        if (Input.GetMouseButton(1))
-        {
-            RayEnd = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-
-        }
-
-        Vector2 rayDir = RayEnd - RayStart;
-        float l = Mathf.Sqrt(Vector2.Dot(rayDir, rayDir));
-        rayDir = rayDir.normalized;
-        RaycastHit2D raycastHit = Physics2D.Raycast(RayStart, rayDir, l);
-
-        Debug.DrawLine(RayStart, RayEnd, Color.blue);
-        Debug.DrawRay(RayStart, rayDir * l, Color.red);
-
-        if (raycastHit.collider != null)
-            Debug.Log("RAYCAST: " + raycastHit.collider.name);
-
-
-        var Coll = Physics2D.Linecast(RayStart, RayEnd);
-        if (Coll.collider != null)
-            Debug.Log("LINECAST: " + Coll.collider.name);
+        SelfPointer = this;
+        RenderSettings.ambientLight = Color.white;
+        InitAllPlayers();
+    }
+    void Start()
+    {
+        // Init all managers
+        GameStates_InitState();
+        GameStates_ChangeState(GAME_STATE.PLAYERS_PICK_MENU);
     }
 
+    void Update()
+    {
+        float deltaTime = Time.deltaTime;
+        m_Array_GameStates[m_CurrentGameState].UpdateState(deltaTime);
+    }
 
 
 }

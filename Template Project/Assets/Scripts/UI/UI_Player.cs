@@ -5,6 +5,9 @@ using UnityEngine;
 
 public class UI_Player : MonoBehaviour
 {
+    // The individual player element in player select
+
+    // Parts of the UI that is assign in unity editor --------
     public Text m_Text_PlayerName_Display;
     
     public InputField m_InputField_PlayerName;
@@ -20,8 +23,9 @@ public class UI_Player : MonoBehaviour
 
     public Text m_ButtonText_Right;
     public Image m_ButtonIcon_Right;
+    // ----------
 
-    static Vector3 SHIP_POSITION_OFFSET = new Vector3(0.0f, 2.5f, 0.0f);
+    static Vector3 SHIP_POSITION_OFFSET = new Vector3(-1.0f, 2.5f, 0.0f);
 
     GameMain.PlayerInfo m_PlayerInfo;
     public void Init(GameMain.PlayerInfo playerInfo, GameObject parentObj)
@@ -31,20 +35,15 @@ public class UI_Player : MonoBehaviour
         m_Text_PlayerName_Display.text = m_PlayerInfo.name;
         m_InputField_PlayerName.gameObject.SetActive(false);
 
-        playerInfo.position = Camera.main.ScreenToWorldPoint(transform.position) + SHIP_POSITION_OFFSET;
+        playerInfo.spawnPosition = Camera.main.ScreenToWorldPoint(transform.position) + SHIP_POSITION_OFFSET;
         //transform.position = Camera.main.ScreenToWorldPoint(new Vector3(playerInfo.position.x, playerInfo.position.y, 0.0f));
         //transform.SetParent(parentObj.transform);
 
         AssignKeys(playerInfo.upKey, playerInfo.downKey, playerInfo.leftKey, playerInfo.rightKey);
     }
 
-    string GetLastCharFromString(string text)
-    {
-        char[] arr = text.ToCharArray();
-        if (arr.Length > 0)
-            return "" + arr[arr.Length - 1];
-        return "";
-    }
+    // Handles the visual representation of the keys each player uses, some keys will be translated to symbols.
+    // If the key is not display as a symbol, it should max have one char, which in this case is defined as the last char in the string.
     public void AssignKeys(KeyCode upKey, KeyCode downKey, KeyCode leftKey, KeyCode rightKey)
     {
         if(upKey == KeyCode.UpArrow)
@@ -95,9 +94,19 @@ public class UI_Player : MonoBehaviour
             m_ButtonText_Right.text = GetLastCharFromString(rightKey.ToString());
             m_ButtonIcon_Right.gameObject.SetActive(false);
         }
-        
     }
 
+    string GetLastCharFromString(string text)
+    {
+        char[] arr = text.ToCharArray();
+        if (arr.Length > 0)
+            return "" + arr[arr.Length - 1];
+        return "";
+    }
+
+
+    //---------------------------------------------------------------
+    // ----------- BUTTON PRESS AND FIELD FUNCTIONS -----------
     public void ButtonPressed_ChangeName()
     {
         m_Text_PlayerName_Display.gameObject.SetActive(false);
@@ -113,16 +122,4 @@ public class UI_Player : MonoBehaviour
         m_InputField_PlayerName.gameObject.SetActive(false);
     }
 
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }

@@ -40,10 +40,10 @@ public class ObjectManager : MonoBehaviour
     //---- Ship specific functions ------------
     // The approach with bullets is the expectation that it might by many at the same time, 
     // so objects when created or deleted is handling so the list just adds and removes at the end, 
-    public void Ship_SetIconVisibility(bool isVisible)
+    public void Ship_SetIconVisibility(bool isVisible_InvinvibilityIcon, bool isVisible_ShotIcon, bool isVisible_TextIcon)
     {
         for (int i = 0; i < m_List_ObjectPlayerShips.Count; ++i)
-            m_List_ObjectPlayerShips[i].SetExtraIconsVisibility(isVisible);
+            m_List_ObjectPlayerShips[i].SetExtraIconsVisibility(isVisible_InvinvibilityIcon, isVisible_ShotIcon, isVisible_TextIcon);
     }
 
     public void Ship_SetDrawingActivity(bool isActive)
@@ -78,7 +78,7 @@ public class ObjectManager : MonoBehaviour
             GameObject obj = Instantiate(Prefab_ObjectPlayer, Vector2.zero, Quaternion.identity);
             ObjectPlayerMain s = obj.GetComponent<ObjectPlayerMain>();
             s.Init(GameMain.GetGameMain().GetPlayerInfo(i), m_LineHolderObject);
-            s.SetExtraIconsVisibility(false);
+            s.SetExtraIconsVisibility(false, false, false);
             m_List_ObjectPlayerShips.Add(s);
         }
     }
